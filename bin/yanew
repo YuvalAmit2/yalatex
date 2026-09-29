@@ -4,8 +4,8 @@
 #   yanew <notes|paper|beamer> <name> ["Title"]
 #
 # Creates ./<name>/<name>.tex from starters/starter-<kind>.tex, plus an empty
-# ./<name>/graphics/ folder, and opens the .tex file in VS Code if the `code`
-# command is installed. The title defaults to <name>.
+# ./<name>/graphics/ folder, and opens the .tex file in VS Code.
+# The title defaults to <name>.
 #
 # newnotes, newpaper and newbeamer are shortcuts for the three kinds.
 
@@ -62,6 +62,12 @@ YA_TITLE="$title" awk '
 
 echo "Created $file"
 
-if command -v code >/dev/null 2>&1; then
+# Open the file in VS Code. On a Mac, `open -b` hands the file to the VS Code
+# that's already running. The `code` command would instead briefly start a
+# second copy of VS Code, which leaves an extra VS Code icon in the Dock.
+# `code` is only used as a fallback (e.g. not on a Mac).
+if open -b com.microsoft.VSCode "$file" 2>/dev/null; then
+  :
+elif command -v code >/dev/null 2>&1; then
   code "$file"
 fi
