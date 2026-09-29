@@ -1,0 +1,206 @@
+% ya-notes-thms.sty -- theorem boxes and theorem-like environments for notes mode
+% (Formerly notes_settings/thms_boxs.tex in Overleaf-Template.)
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ya-notes-thms}[2026/09/29 yalatex: theorem boxes and theorem-like environments for notes mode]
+
+% Colors for stuff
+\definecolor{thmcolor}{RGB}{30, 144, 255}
+\definecolor{lemcolor}{RGB}{50, 205, 50}
+\definecolor{excolor}{RGB}{100, 80, 180}
+\definecolor{defcolor}{RGB}{255, 140, 0}
+\definecolor{propcolor}{RGB}{30,144,255}
+\definecolor{rmkcolor}{RGB}{147, 112, 219}
+\definecolor{corcolor}{RGB}{50, 205, 50}
+\definecolor{notecolor}{RGB}{147, 112, 219}
+\definecolor{quecolor}{RGB}{147, 112, 219}
+\definecolor{exercolor}{RGB}{100, 80, 180}
+\definecolor{conjcolor}{RGB}{30,144,255}
+
+\newcounter{maincounter}
+
+\tcbset{
+    mybox/.style={
+        arc=3pt,
+        boxrule=0.5pt,
+        titlerule=0.5pt,
+        colback=white, 
+        coltext=black,
+        fonttitle=\bfseries,
+        fontupper=\normalfont,
+        top=4pt,
+        bottom=4pt,
+        left=6pt,
+        right=6pt,
+        toptitle=3pt,
+        bottomtitle=3pt,
+        boxsep=1pt,
+        before skip=12pt,
+        after skip=12pt,       
+        breakable,
+        label type=theorem,
+        parbox=false,
+        standard
+    },
+    plainbox/.style={
+        boxrule=1pt,
+        arc=0pt,
+        colback=white,
+        colframe=white,
+        size=fbox,
+        before skip=5pt,
+        after skip=5pt
+    }
+}
+
+% This defines a new box type with the same universal style, where the arguments reflect slight variations in style:
+% 1. Environment name
+% 2. Display name
+% 3. General color theme
+% 4. Cleverref Type
+% 5. Cleverref Type Plural
+% 6. Optional format changes
+\NewDocumentCommand{\newboxtype}{m m m m m O{}}{
+\NewTColorBox[use counter=maincounter, number within=section, crefname={#4}{#5}]{#1}{O{} O{}}
+{mybox,
+colframe=#3!50!black,
+colbacktitle=#3!10,
+coltitle=#3,
+title=\ifblank{##1}{#2 \hfill \thetcbcounter}{\textit{##1} \hfill  \thetcbcounter},
+##2,
+#6
+}
+\NewTColorBox{#1*}{O{} O{}}
+{mybox,
+colframe=#3!50!black,
+colbacktitle=#3!10,
+coltitle=#3,
+title=\ifblank{##1}{#2}{\textit{##1}},
+##2,
+#6
+}
+}
+
+\newboxtype{thm}{Theorem}{thmcolor}{Theorem}{Theorems}
+\newboxtype{defn}{Definition}{defcolor}{Definition}{Definitions}
+\newboxtype{lem}{Lemma}{lemcolor}{Lemma}{Lemmas}
+\newboxtype{cor}{Corollary}{corcolor}{Corollary}{Corollaries}
+\newboxtype{prop}{Proposition}{propcolor}{Proposition}{Propositions}
+\newboxtype{rmk}{Remark}{rmkcolor}{Remark}{Remarks}
+\newboxtype{conj}{Conjecture}{conjcolor}{Conjecture}{Conjectures}
+
+\NewTColorBox[use counter=maincounter, number within=section]{notebox}{O{} O{}}
+{mybox,
+colframe=notecolor!50!black,
+colbacktitle=notecolor!10,
+coltitle=notecolor,
+title=\ifblank{#1}{Note \hfill \thetcbcounter}{#1 \hfill \thetcbcounter},
+#2,
+}
+
+\NewTColorBox{notebox*}{O{} O{}}
+{mybox,
+colframe=notecolor!50!black,
+colbacktitle=notecolor!10,
+coltitle=notecolor,
+title=\ifblank{#1}{Note}{#1},
+#2,
+}
+
+% An invisible box for centering floats inside other boxes
+\newcommand{\figbox}[1]{
+\begin{centering}
+\tcbox[plainbox]{#1}
+\end{centering}
+}
+
+% AI-generated code (the block below):
+% Fixes a compatability issue with TeX Live 2026 and thmtools that was causing compliling errors.
+
+\@ifundefined{newcounteralias}{}{%
+  \renewcommand\thmt@autorefsetup{\@xa\def\csname\thmt@envname autorefname\@xa\endcsname\@xa{\thmt@thmname}}%
+}
+
+\counterwithin{maincounter}{section}
+
+\declaretheoremstyle[
+spaceabove=6pt, 
+spacebelow=6pt,
+headfont=\normalfont\bfseries,
+notefont=\mdseries, notebraces={(}{)},
+bodyfont=\normalfont\itshape,
+postheadspace=5pt,
+headpunct=.
+]{regular}
+
+% AI-generated code (the block below):
+% This makes it so thmtools environments can have their options edited (namely, they can be labeled) with a second optional argument, much like my thmbox envrionments.
+\newcommand\addkeyarg[1]{%
+  \expandafter\let\csname orig@env@#1\expandafter\endcsname\csname #1\endcsname
+  \expandafter\RenewDocumentCommand\csname #1\endcsname{O{} O{}}{%
+    \ifblank{##2}%
+      {\ifblank{##1}{\@nameuse{orig@env@#1}}%
+                    {\@nameuse{orig@env@#1}[##1]}}%
+      {\ifblank{##1}{\@nameuse{orig@env@#1}[##2]}%
+                    {\@nameuse{orig@env@#1}[name={##1},##2]}}%
+  }%
+}
+
+% Custom command for quickly building a new theorem type. The arguments are as follows:
+% 1. Environment Name
+% 2. Display Name
+% 3. Uppercase reference
+% 4. Uppercase references
+% 5. Color
+% 6. Counter
+% 7. Optional arguments
+\NewDocumentCommand{\newthmtype}{m m m m m m O{}}{
+\declaretheorem[name=\color{#5}#2,
+sibling=#6,
+Refname={#3,#4},
+style=regular,
+#7
+]{#1}
+\declaretheorem[name=\color{#5}#2,
+Refname={#3,#4},
+style=regular,
+numbered=no,
+#7
+]{#1*}
+\addkeyarg{#1}  % AI addition
+\addkeyarg{#1*}  % AI addition
+}
+
+\newthmtype{ex}{Example}{Example}{Examples}{excolor}{maincounter}
+\newthmtype{que}{Question}{Question}{Questions}{quecolor}{maincounter}
+\newthmtype{claim}{Claim}{Claim}{Claims}{black}{maincounter}
+
+\newcounter{exercisecounter}
+\newthmtype{exercise}{Exercise}{Exercise}{Exercises}{exercolor}{exercisecounter}
+
+% AI-generated code: creates a thmtools environment which has a customizable name, similar to notebox.
+\newcommand\notethmname{Note}
+\declaretheorem[name=\color{notecolor}\protect\notethmname,
+sibling=maincounter,
+Refname={Note,Notes},
+style=regular
+]{notethminner}
+\declaretheorem[name=\color{notecolor}\protect\notethmname,
+Refname={Note,Notes},
+style=regular,
+numbered=no
+]{notethminner*}
+
+\NewDocumentEnvironment{notethm}{O{} O{}}
+{\ifblank{#1}{}{\renewcommand\notethmname{#1}}%
+ \ifblank{#2}{\notethminner}{\notethminner[#2]}}
+{\endnotethminner}
+
+\NewDocumentEnvironment{notethm*}{O{} O{}}
+{\ifblank{#1}{}{\renewcommand\notethmname{#1}}%
+ \ifblank{#2}{\csname notethminner*\endcsname}{\csname notethminner*\endcsname[#2]}}
+{\csname endnotethminner*\endcsname}
+
+% Similar to proof but with the word solution
+\newenvironment{solution}{\textit{Solution.}}{\hfill $\square$}
+
+\endinput

@@ -1,0 +1,74 @@
+% ya-notes.sty -- page layout, fonts, headers and ToC for notes mode
+% (Formerly notes_settings/notes_stuff.tex in Overleaf-Template.)
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ya-notes}[2026/09/29 yalatex: page layout, fonts, headers and ToC for notes mode]
+
+%%% References %%%
+\RequirePackage{hyperref}
+\RequirePackage[nameinlink]{cleveref}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=cyan}
+
+%%% Sections of Table of Contents %%%
+% Customize section formatting
+\RequirePackage{titlesec}
+\titlelabel{ \thetitle.\hspace{0.5em}}
+
+% Table of Contents
+\RequirePackage{tocloft}
+% Dots from item to page
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftdotsep}{2}   
+
+% Spacing between ToC items
+\setlength{\cftbeforetoctitleskip}{0pt} % B4 title
+\setlength{\cftaftertoctitleskip}{1em} % B4 first entry
+\setlength{\cftbeforesecskip}{6pt} % After section
+\setlength{\cftbeforesubsecskip}{0pt} 
+% B4 subsection
+\setlength{\cftbeforesubsubsecskip}{0pt}  % B4 subsection (short)
+
+
+%%% Page dimensions %%%
+\RequirePackage[paperheight=11in,
+   paperwidth=8.5in,
+   top=20mm,
+   headheight=15mm,
+   bottom=20mm,
+   left=26mm,
+   right=26mm]{geometry}
+
+%%% Headers %%%
+\RequirePackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}}
+\fancyhead[L]{\S\thesection. \leftmark}
+\fancyhead[R]{\thepage}
+\setlength{\headsep}{14pt}
+
+% Font and Spacing
+\RequirePackage{mathpazo} % Font
+\renewcommand{\baselinestretch}{1.25} % Line spacing
+\addtolength{\jot}{2pt} % Spacing in math
+\RequirePackage[skip=3pt plus2pt minus1pt]{parskip} % Paragraph spacing
+% Prevent over-spacing display math
+\AtBeginDocument{
+  \setlength{\abovedisplayskip}{6pt plus 2pt minus 2pt}
+  \setlength{\belowdisplayskip}{6pt plus 2pt minus 2pt}
+  \setlength{\abovedisplayshortskip}{2pt plus 2pt minus 1pt}
+  \setlength{\belowdisplayshortskip}{6pt plus 2pt minus 2pt}} 
+
+% AI generated (from \RequirePackage{titling} to \renewcommand{\maketitlehookd})
+% Formats the spacing of the title
+\RequirePackage{titling}
+\pretitle{\centering \LARGE}
+\posttitle{\centering \par\vspace{0.3em}} 
+\preauthor{\centering \large}
+\postauthor{\centering \par\vspace{0.5em}}
+\predate{\centering \large}
+\postdate{\centering\par\vspace{3em}}
+\renewcommand{\maketitlehookd}{\vspace{-1cm}}
+
+
+
+\endinput

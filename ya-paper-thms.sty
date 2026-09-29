@@ -1,0 +1,84 @@
+% ya-paper-thms.sty -- theorem-like environments for paper mode
+% (Formerly paper_settings/thms_setup.tex in Overleaf-Template.)
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ya-paper-thms}[2026/09/29 yalatex: theorem-like environments for paper mode]
+
+% AI-generated code (the block below):
+% Fixes a compatability issue with TeX Live 2026 and thmtools that was causing compliling errors.
+\@ifundefined{newcounteralias}{}{%
+  \renewcommand\thmt@autorefsetup{\@xa\def\csname\thmt@envname autorefname\@xa\endcsname\@xa{\thmt@thmname}}%
+}
+
+\newcounter{maincounter}
+\counterwithin{maincounter}{section}
+\declaretheoremstyle[
+spaceabove=6pt, 
+spacebelow=6pt,
+headfont=\normalfont\bfseries,
+notefont=\mdseries, notebraces={(}{)},
+bodyfont=\normalfont\itshape,
+postheadspace=5pt,
+headpunct=.
+]{regular}
+
+
+% Custom command for quickly building a new theorem type. The arguments are as follows:
+% 1. Environment Name
+% 2. Display Name
+% 3. Lowercase reference
+% 4. Lowercase references
+% 5. Uppercase reference
+% 6. Uppercase references
+% 7. Optional arguments
+\NewDocumentCommand{\newthmtype}{m m m m m m O{}}{
+\declaretheorem[name=#2,
+sibling=maincounter,
+refname={#3,#4},
+Refname={#5,#6},
+style=regular,
+#7
+]{#1}
+\declaretheorem[name=#2,
+refname={#3,#4},
+Refname={#5,#6},
+style=regular,
+numbered=no,
+#7
+]{#1*}
+}
+
+\newthmtype{thm}{Theorem}{theorem}{theorems}{Theorem}{Theorems}
+\newthmtype{prop}{Proposition}{proposition}{propositions}{Proposition}{Propositions}
+\newthmtype{rmk}{Remark}{remark}{remarks}{Remark}{Remarks}
+\newthmtype{cor}{Corollary}{corollary}{corollaries}{Corollary}{Corollaries}
+\newthmtype{defn}{Definition}{definition}{definitions}{Definition}{Definitions}
+\newthmtype{lem}{Lemma}{lemma}{lemmas}{Lemma}{Lemmas}
+\newthmtype{ex}{Example}{example}{examples}{Example}{Examples}
+\newthmtype{que}{Question}{question}{questions}{Question}{Questions}
+\newthmtype{exer}{Exercise}{exercise}{exercises}{Exercise}{Exercises}
+\newthmtype{conj}{Conjecture}{conjecture}{conjectures}{Conjecture}{Conjectures}
+
+
+% AI-generated code: creates a thmtools environment which has a customizable name, similar to notebox.
+\newcommand\notethmname{Note}
+\declaretheorem[name=\protect\notethmname,
+sibling=maincounter,
+Refname={Note,Notes},
+style=regular
+]{notethminner}
+\declaretheorem[name=\protect\notethmname,
+Refname={Note,Notes},
+style=regular,
+numbered=no
+]{notethminner*}
+
+\NewDocumentEnvironment{note}{O{} O{}}
+{\ifblank{#1}{}{\renewcommand\notethmname{#1}}%
+ \ifblank{#2}{\notethminner}{\notethminner[#2]}}
+{\endnotethminner}
+
+\NewDocumentEnvironment{note*}{O{} O{}}
+{\ifblank{#1}{}{\renewcommand\notethmname{#1}}%
+ \ifblank{#2}{\csname notethminner*\endcsname}{\csname notethminner*\endcsname[#2]}}
+{\csname endnotethminner*\endcsname}
+\endinput

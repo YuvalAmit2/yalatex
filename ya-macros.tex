@@ -1,0 +1,94 @@
+% ya-macros.tex -- math macros for every yalatex mode.
+% (Moved here from the top of main.tex in Overleaf-Template.)
+%
+% Loaded automatically by yalatex.sty; don't \input it yourself.
+% It's a .tex file rather than .sty so VS Code's LaTeX Workshop can read the
+% definitions for its math hover preview. For that, keep each definition on
+% a single line, and point this setting at this file:
+%   "latex-workshop.hover.preview.newcommand.newcommandFile": "/Users/<you>/LaTeX/yalatex/ya-macros.tex"
+
+% Common Shorthand Commands
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\A}{\mathbb{A}}
+\renewcommand{\H}{\mathbb{H}}
+\renewcommand{\P}{\mathbb{P}}
+\newcommand{\mb}{\mathbb}
+\newcommand{\mc}{\mathcal}
+\newcommand{\mf}{\mathfrak}
+\newcommand{\veps}{\varepsilon}
+\newcommand{\ul}{\underline}
+\newcommand{\Wedge}{\bigwedge\nolimits}
+\renewcommand{\bar}{\overline}
+\renewcommand{\hat}{\widehat}
+\renewcommand{\tilde}{\widetilde}
+
+% Commands With Inputs
+\newcommand{\matr}[1]{\begin{pmatrix}#1\end{pmatrix}}
+\newcommand{\case}[1]{\begin{cases}#1\end{cases}}
+\newcommand{\leg}[2]{\left ( \frac{#1}{#2} \right )}
+\newcommand{\partder}[3][]{\frac{\partial^{#1}#2}{\partial #3^{#1}}}
+% Arrows
+\newcommand{\arr}[1][]{\xrightarrow{#1}}
+\newcommand{\inj}[1][]{\xhookrightarrow{#1}}
+\newcommand{\surj}[1][]{\xrightarrow{#1}\mathrel{\mkern-14mu}\rightarrow}
+\newcommand{\maps}[1][]{\xmapsto{#1}}
+% Brackets
+\newcommand\angles[1]{\left \langle #1 \right \rangle}
+\newcommand\brax[1]{\left \{ #1 \right \} }
+\newcommand\floor[1]{\left \lfloor #1 \right \rfloor }
+\newcommand\paren[1]{\left ( #1 \right ) }
+\newcommand\abs[1]{\left | #1 \right | }
+\newcommand\norm[1]{\left\lVert #1 \right\rVert}
+\newcommand\braks[1]{\left [ #1 \right ] }
+\newcommand\setbar{\: \middle |\: }
+\renewcommand{\mod}[1]{\ \ \mathrm{mod}\ #1}
+\renewcommand{\pmod}[1]{\ \paren{\mathrm{mod} \: #1}}
+
+% Common Math Words
+\newcommand{\Gal}{\operatorname{Gal}}
+\newcommand{\Hom}{\operatorname{Hom}}
+\newcommand{\ord}{\operatorname{ord}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\nul}{\operatorname{null}}
+\renewcommand{\Re}{\operatorname{Re}}
+\renewcommand{\Im}{\operatorname{Im}}
+\newcommand{\img}{\operatorname{img}}
+\newcommand{\Img}{\operatorname{Img}}
+\newcommand{\Ker}{\operatorname{Ker}}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\dom}{\operatorname{dom}}
+\newcommand{\ran}{\operatorname{ran}}
+\newcommand{\lcm}{\operatorname{lcm}}
+\newcommand{\Tor}{\operatorname{Tor}}
+\newcommand{\Aut}{\operatorname{Aut}}
+\newcommand{\Span}{\operatorname{Span}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\proj}{\operatorname{proj}}
+\newcommand{\Log}{\operatorname{Log}}
+\newcommand{\id}{\operatorname{id}}
+\newcommand{\GL}{\operatorname{GL}}
+\newcommand{\SL}{\operatorname{SL}}
+\newcommand{\PSL}{\operatorname{PSL}}
+\newcommand{\Char}{\operatorname{char}}
+\newcommand{\sgn}{\operatorname{sgn}}
+\newcommand{\tors}{\operatorname{tors}}
+\newcommand{\Ext}{\operatorname{Ext}}
+\newcommand{\Res}{\operatorname{Res}}
+\newcommand{\coker}{\operatorname{coker}}
+\newcommand{\End}{\operatorname{End}}
+\newcommand{\Spec}{\operatorname{Spec}}
+\newcommand{\Specm}{\operatorname{Specm}}
+\newcommand{\Int}{\operatorname{Int}}
+
+\newcommand{\w}[1]{\operatorname{#1}}
+\newcommand{\bw}[1]{\mathbf{#1}}
+\renewcommand{\th}{^{\text{th}}}
+\newcommand{\st}{^{\text{st}}}
+\newcommand{\nd}{^{\text{nd}}}
+
+\endinput

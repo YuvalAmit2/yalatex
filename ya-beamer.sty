@@ -1,0 +1,26 @@
+% ya-beamer.sty -- fonts, theme and settings for beamer mode
+% (Formerly presentation_settings/presentation_stuff.tex in Overleaf-Template.)
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ya-beamer}[2026/09/29 yalatex: fonts, theme and settings for beamer mode]
+
+% Font and Spacing
+\usefonttheme{serif}
+% \usefonttheme{professionalfonts}
+\RequirePackage{mathpazo} % Font
+\renewcommand{\baselinestretch}{1.2} % Line spacing
+\addtolength{\jot}{4pt} % Spacing in math
+\RequirePackage[skip=2pt plus2pt minus1pt]{parskip} % Paragraph spacing
+\AtBeginDocument{
+  \setlength{\abovedisplayskip}{6pt plus 2pt minus 2pt}
+  \setlength{\belowdisplayskip}{6pt plus 2pt minus 2pt}
+  \setlength{\abovedisplayshortskip}{0pt plus 2pt}
+  \setlength{\belowdisplayshortskip}{3pt plus 2pt minus 2pt}} % Prevent over-spacing display math
+
+% References
+\RequirePackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=Turquoise}
+
+% Beamer settings
+\usetheme{Madrid}
+\setbeamertemplate{blocks}[rounded][shadow=false]
+\endinput

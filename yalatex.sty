@@ -1,0 +1,58 @@
+% yalatex.sty -- Yuval Amit's LaTeX template.
+%
+% Usage (right after \documentclass):
+%   \usepackage[notes]{yalatex}    course notes and problem sets
+%   \usepackage[paper]{yalatex}    papers (use with amsart)
+%   \usepackage[beamer]{yalatex}   presentations (use with beamer)
+%
+% With no option, the mode follows the document class:
+%   beamer -> beamer,  amsart -> paper,  anything else -> notes.
+%
+% Files loaded, in order:
+%   ya-base.sty                            packages shared by every mode
+%   ya-notes.sty  + ya-notes-thms.sty      notes mode
+%   ya-paper.sty  + ya-paper-thms.sty      paper mode
+%   ya-beamer.sty                          beamer mode
+%   ya-macros.tex                          math macros (all modes)
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{yalatex}[2026/09/29 Yuval Amit's LaTeX template]
+
+%%% Options %%%
+\def\ya@mode{}
+\def\ya@notes{notes}
+\def\ya@paper{paper}
+\def\ya@beamer{beamer}
+\DeclareOption{notes}{\let\ya@mode\ya@notes}
+\DeclareOption{paper}{\let\ya@mode\ya@paper}
+\DeclareOption{beamer}{\let\ya@mode\ya@beamer}
+\DeclareOption*{\PackageWarning{yalatex}{Unknown option `\CurrentOption' ignored}}
+\ProcessOptions\relax
+
+% No mode given: pick one from the document class
+\ifx\ya@mode\@empty
+  \@ifclassloaded{beamer}{\let\ya@mode\ya@beamer}{%
+    \@ifclassloaded{amsart}{\let\ya@mode\ya@paper}{\let\ya@mode\ya@notes}}%
+\fi
+
+%%% Load the pieces %%%
+\RequirePackage{ya-base}
+
+\ifx\ya@mode\ya@notes
+  \RequirePackage{ya-notes}
+  \RequirePackage{ya-notes-thms}
+\fi
+
+\ifx\ya@mode\ya@paper
+  \RequirePackage{ya-paper}
+  \RequirePackage{ya-paper-thms}
+\fi
+
+\ifx\ya@mode\ya@beamer
+  \RequirePackage{ya-beamer}
+\fi
+
+% The macros are a .tex file (not .sty) so that VS Code's LaTeX Workshop
+% can read them for its math hover preview.
+\input{ya-macros}
+
+\endinput
