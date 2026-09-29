@@ -1,18 +1,36 @@
 #!/usr/bin/env bash
 # yanew -- start a new yalatex document in the current directory.
 #
-#   yanew <notes|paper|beamer> <name> ["Title"]
+#   yanew <kind> <name> ["Title"]
+#
+# <kind> is any mode with a starter file, i.e. starters/starter-<kind>.tex
+# (currently notes, paper, beamer, homework). "hw" also means homework.
 #
 # Creates ./<name>/<name>.tex from starters/starter-<kind>.tex, plus an empty
 # ./<name>/graphics/ folder, and opens the .tex file in VS Code.
 # The title defaults to <name>.
 #
-# newnotes, newpaper and newbeamer are shortcuts for the three kinds.
+# newnotes, newpaper, newbeamer and newhw are shortcuts for the four kinds.
 
 set -euo pipefail
 
+# The template folder is the parent of this script's folder (yalatex/bin/..).
+# Set YALATEX_DIR to override.
+yalatex_dir=${YALATEX_DIR:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"}
+
+# Kinds = the <kind> part of every starters/starter-<kind>.tex
+available_kinds() {
+  local f kinds=""
+  for f in "$yalatex_dir"/starters/starter-*.tex; do
+    [[ -e "$f" ]] || continue
+    f=${f##*/starter-}
+    kinds+="${kinds:+, }${f%.tex}"
+  done
+  echo "${kinds:-none found in $yalatex_dir/starters}"
+}
+
 usage() {
-  echo "usage: yanew <notes|paper|beamer> <name> [\"Title\"]" >&2
+  echo "usage: yanew <kind> <name> [\"Title\"]   (kinds: $(available_kinds))" >&2
   exit 1
 }
 
@@ -21,10 +39,13 @@ kind=$1
 name=$2
 title=${3:-$2}
 
-case "$kind" in
-  notes|paper|beamer) ;;
-  *) echo "yanew: unknown kind '$kind' (use notes, paper or beamer)" >&2; exit 1 ;;
-esac
+if [[ "$kind" == hw ]]; then
+  kind=homework
+fi
+if [[ ! "$kind" =~ ^[A-Za-z0-9_-]+$ ]]; then
+  echo "yanew: unknown kind '$kind'; available: $(available_kinds)" >&2
+  exit 1
+fi
 
 # Letters, digits, '-', '_' and '.' only: spaces and other characters in a
 # LaTeX file name cause trouble later.
@@ -33,12 +54,9 @@ if [[ ! "$name" =~ ^[A-Za-z0-9._-]+$ ]]; then
   exit 1
 fi
 
-# The template folder is the parent of this script's folder (yalatex/bin/..).
-# Set YALATEX_DIR to override.
-yalatex_dir=${YALATEX_DIR:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"}
 starter="$yalatex_dir/starters/starter-$kind.tex"
 if [[ ! -f "$starter" ]]; then
-  echo "yanew: starter file not found: $starter" >&2
+  echo "yanew: unknown kind '$kind' (no starters/starter-$kind.tex); available: $(available_kinds)" >&2
   exit 1
 fi
 
