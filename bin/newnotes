@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# newnotes <name> ["Title"]  --  shortcut for: yanew notes <name> ["Title"]
+exec "$(dirname "${BASH_SOURCE[0]}")/yanew" notes "$@"

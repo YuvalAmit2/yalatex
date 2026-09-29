@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# newbeamer <name> ["Title"]  --  shortcut for: yanew beamer <name> ["Title"]
+exec "$(dirname "${BASH_SOURCE[0]}")/yanew" beamer "$@"

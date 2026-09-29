@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# yanew -- start a new yalatex document in the current directory.
+#
+#   yanew <notes|paper|beamer> <name> ["Title"]
+#
+# Creates ./<name>/<name>.tex from starters/starter-<kind>.tex, plus an empty
+# ./<name>/graphics/ folder, and opens the .tex file in VS Code if the `code`
+# command is installed. The title defaults to <name>.
+#
+# newnotes, newpaper and newbeamer are shortcuts for the three kinds.
+
+set -euo pipefail
+
+usage() {
+  echo "usage: yanew <notes|paper|beamer> <name> [\"Title\"]" >&2
+  exit 1
+}
+
+[[ $# -ge 2 && $# -le 3 ]] || usage
+kind=$1
+name=$2
+title=${3:-$2}
+
+case "$kind" in
+  notes|paper|beamer) ;;
+  *) echo "yanew: unknown kind '$kind' (use notes, paper or beamer)" >&2; exit 1 ;;
+esac
+
+# Letters, digits, '-', '_' and '.' only: spaces and other characters in a
+# LaTeX file name cause trouble later.
+if [[ ! "$name" =~ ^[A-Za-z0-9._-]+$ ]]; then
+  echo "yanew: '$name' is not a good file name; use letters, digits, - _ . only (no spaces)" >&2
+  exit 1
+fi
+
+# The template folder is the parent of this script's folder (yalatex/bin/..).
+# Set YALATEX_DIR to override.
+yalatex_dir=${YALATEX_DIR:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"}
+starter="$yalatex_dir/starters/starter-$kind.tex"
+if [[ ! -f "$starter" ]]; then
+  echo "yanew: starter file not found: $starter" >&2
+  exit 1
+fi
+
+if [[ -e "$name" ]]; then
+  echo "yanew: '$name' already exists here; nothing was created" >&2
+  exit 1
+fi
+
+mkdir -p "$name/graphics"
+file="$name/$name.tex"
+
+# Put the title into the first \title{...Title} on the \title line. The title
+# goes in through the environment so backslashes and & arrive untouched.
+YA_TITLE="$title" awk '
+  !done && /\\title/ && (i = index($0, "{Title}")) {
+    $0 = substr($0, 1, i) ENVIRON["YA_TITLE"] substr($0, i + 6)
+    done = 1
+  }
+  { print }
+' "$starter" > "$file"
+
+echo "Created $file"
+
+if command -v code >/dev/null 2>&1; then
+  code "$file"
+fi
