@@ -1,0 +1,35 @@
+# Build directory (if latexmk is set up with $aux_dir = 'build')
+build/
+
+# LaTeX auxiliary files
+*.aux
+*.log
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.xdv
+*.out
+*.toc
+*.lof
+*.lot
+*.thm
+
+# Bibliography (BibTeX / biber)
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+
+# Index
+*.idx
+*.ilg
+*.ind
+
+# Beamer
+*.nav
+*.snm
+*.vrb
+
+# macOS
+.DS_Store
