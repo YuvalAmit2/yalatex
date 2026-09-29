@@ -22,9 +22,11 @@
 \def\ya@notes{notes}
 \def\ya@paper{paper}
 \def\ya@beamer{beamer}
+\def\ya@homework{homework}
 \DeclareOption{notes}{\let\ya@mode\ya@notes}
 \DeclareOption{paper}{\let\ya@mode\ya@paper}
 \DeclareOption{beamer}{\let\ya@mode\ya@beamer}
+\DeclareOption{homework}{\let\ya@mode\ya@homework}
 \DeclareOption*{\PackageWarning{yalatex}{Unknown option `\CurrentOption' ignored}}
 \ProcessOptions\relax
 
@@ -49,6 +51,11 @@
 
 \ifx\ya@mode\ya@beamer
   \RequirePackage{ya-beamer}
+\fi
+
+\ifx\ya@mode\ya@homework
+  \RequirePackage{ya-homework}
+  \RequirePackage{ya-homework-thms}
 \fi
 
 % The macros are a .tex file (not .sty) so that VS Code's LaTeX Workshop

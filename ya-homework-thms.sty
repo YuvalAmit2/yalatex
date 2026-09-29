@@ -1,0 +1,127 @@
+% ya-notes-thms.sty -- theorem boxes and theorem-like environments for notes mode
+% (Formerly notes_settings/thms_boxs.tex in Overleaf-Template.)
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ya-homework-thms}[2026/09/29 yalatex: theorem boxes and theorem-like environments for homework mode]
+
+% Colors for stuff
+\definecolor{thmcolor}{RGB}{30, 144, 255}
+\definecolor{lemcolor}{RGB}{50, 205, 50}
+\definecolor{excolor}{RGB}{100, 80, 180}
+\definecolor{defcolor}{RGB}{255, 140, 0}
+\definecolor{propcolor}{RGB}{30,144,255}
+\definecolor{rmkcolor}{RGB}{147, 112, 219}
+\definecolor{corcolor}{RGB}{50, 205, 50}
+\definecolor{notecolor}{RGB}{147, 112, 219}
+\definecolor{quecolor}{RGB}{147, 112, 219}
+\definecolor{exercolor}{RGB}{100, 80, 180}
+\definecolor{conjcolor}{RGB}{30,144,255}
+
+\newcounter{maincounter}
+
+
+% AI-generated code (the block below):
+% Fixes a compatability issue with TeX Live 2026 and thmtools that was causing compliling errors.
+
+\@ifundefined{newcounteralias}{}{%
+  \renewcommand\thmt@autorefsetup{\@xa\def\csname\thmt@envname autorefname\@xa\endcsname\@xa{\thmt@thmname}}%
+}
+
+\declaretheoremstyle[
+spaceabove=6pt, 
+spacebelow=6pt,
+headfont=\normalfont\bfseries,
+notefont=\mdseries, notebraces={(}{)},
+bodyfont=\normalfont\itshape,
+postheadspace=5pt,
+headpunct=.
+]{regular}
+
+\declaretheoremstyle[
+spaceabove=6pt, 
+spacebelow=6pt,
+headfont=\normalfont\bfseries,
+notefont=\mdseries, notebraces={(}{)},
+bodyfont=\normalfont\bfseries,
+postheadspace=5pt,
+headpunct=.
+]{regularbf}
+
+% AI-generated code (the block below):
+% This makes it so thmtools environments can have their options edited (namely, they can be labeled) with a second optional argument, much like my thmbox envrionments.
+\newcommand\addkeyarg[1]{%
+  \expandafter\let\csname orig@env@#1\expandafter\endcsname\csname #1\endcsname
+  \expandafter\RenewDocumentCommand\csname #1\endcsname{O{} O{}}{%
+    \ifblank{##2}%
+      {\ifblank{##1}{\@nameuse{orig@env@#1}}%
+                    {\@nameuse{orig@env@#1}[##1]}}%
+      {\ifblank{##1}{\@nameuse{orig@env@#1}[##2]}%
+                    {\@nameuse{orig@env@#1}[name={##1},##2]}}%
+  }%
+}
+
+% Custom command for quickly building a new theorem type. The arguments are as follows:
+% 1. Environment Name
+% 2. Display Name
+% 3. Uppercase reference
+% 4. Uppercase references
+% 5. Color
+% 6. Counter
+% 7. Optional arguments
+\NewDocumentCommand{\newthmtype}{m m m m m m O{}}{
+\declaretheorem[name=\color{#5}#2,
+sibling=#6,
+Refname={#3,#4},
+style=regular,
+#7
+]{#1}
+\declaretheorem[name=\color{#5}#2,
+Refname={#3,#4},
+style=regular,
+numbered=no,
+#7
+]{#1*}
+\addkeyarg{#1}  % AI addition
+\addkeyarg{#1*}  % AI addition
+}
+
+\newthmtype{thm}{Theorem}{Theorem}{Theorems}{thmcolor}{maincounter}
+\newthmtype{defn}{Definition}{Definition}{Definitions}{defcolor}{maincounter}
+\newthmtype{lem}{Lemma}{Lemma}{Lemmas}{lemcolor}{maincounter}
+\newthmtype{cor}{Corollary}{Corollary}{Corollaries}{corcolor}{maincounter}
+\newthmtype{prop}{Proposition}{Proposition}{Propositions}{propcolor}{maincounter}
+\newthmtype{rmk}{Remark}{Remark}{Remarks}{rmkcolor}{maincounter}
+\newthmtype{conj}{Conjecture}{Conjecture}{Conjectures}{conjcolor}{maincounter}
+\newthmtype{ex}{Example}{Example}{Examples}{excolor}{maincounter}
+\newthmtype{que}{Question}{Question}{Questions}{quecolor}{maincounter}
+\newthmtype{claim}{Claim}{Claim}{Claims}{black}{maincounter}
+
+\newcounter{exercisecounter}
+\newthmtype{exercise}{Exercise}{Exercise}{Exercises}{exercolor}{exercisecounter}[style=regularbf]
+
+% AI-generated code: creates a thmtools environment which has a customizable name, similar to notebox.
+\newcommand\notethmname{Note}
+\declaretheorem[name=\color{notecolor}\protect\notethmname,
+sibling=maincounter,
+Refname={Note,Notes},
+style=regular
+]{notethminner}
+\declaretheorem[name=\color{notecolor}\protect\notethmname,
+Refname={Note,Notes},
+style=regular,
+numbered=no
+]{notethminner*}
+
+\NewDocumentEnvironment{notethm}{O{} O{}}
+{\ifblank{#1}{}{\renewcommand\notethmname{#1}}%
+ \ifblank{#2}{\notethminner}{\notethminner[#2]}}
+{\endnotethminner}
+
+\NewDocumentEnvironment{notethm*}{O{} O{}}
+{\ifblank{#1}{}{\renewcommand\notethmname{#1}}%
+ \ifblank{#2}{\csname notethminner*\endcsname}{\csname notethminner*\endcsname[#2]}}
+{\csname endnotethminner*\endcsname}
+
+% Similar to proof but with the word solution
+\newenvironment{solution}{\textit{Solution.}}{\hfill $\square$}
+
+\endinput
