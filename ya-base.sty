@@ -5,6 +5,24 @@
 
 % Packages: Not sure what most of these do
 \RequirePackage{amsmath,amsthm,amsfonts,amssymb,mathrsfs,dsfont,faktor,tikz,float,subcaption,quiver,enumerate,mathtools,booktabs,lipsum,xparse,graphicx,epstopdf,comment,indentfirst,bm,yhmath,thm-restate,fancyvrb}
+
+% Fix for wrong cross-reference links on LaTeX 2024-11-01 and later
+% (TeX Live 2025+): clicking "Corollary 5.6" jumped to item 1.6.
+% thmtools (loaded above via thm-restate) replaces \@addtoreset with a version
+% that doesn't update \theH<counter>, the hidden counter used to name link
+% targets. hyperref used to patch this back, but stopped in 2024-11 because the
+% kernel now does it, so counters reset per section (e.g. by
+% \counterwithin{maincounter}{section}) got targets like "maincounter.6" that
+% repeat in every section. This puts the \theH update back. It's the same
+% code hyperref used, and it's harmless on older TeX Live.
+\let\ya@thmtools@addtoreset\@addtoreset
+\def\@addtoreset#1#2{%
+  \ya@thmtools@addtoreset{#1}{#2}%
+  \expandafter\xdef\csname theH#1\endcsname{%
+    \expandafter\noexpand
+        \csname the\@ifundefined{theH#2}{}H#2\endcsname
+    .\noexpand\the\noexpand\value{#1}}}
+
 \RequirePackage[dvipsnames]{xcolor}
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[most]{tcolorbox}
