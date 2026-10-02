@@ -25,6 +25,24 @@
 
 \RequirePackage[dvipsnames]{xcolor}
 \RequirePackage[utf8]{inputenc}
+
+% --- Tate-Shafarevich group: Cyrillic Sha from the AMS wncyr fonts ----------
+% \sha in ya-macros.tex is typed as \text{Ш}. These lines make a typed Ш print
+% the wncyr glyph, so the same definition works in pdfLaTeX and in VS Code's
+% MathJax hover preview. The font is only loaded in formulas that use it.
+\DeclareFontEncoding{OT2}{}{}
+\DeclareFontFamily{OT2}{wncyr}{}
+\DeclareFontSubstitution{OT2}{wncyr}{m}{n}
+\DeclareFontShape{OT2}{wncyr}{m}{n}{%
+  <-5.5> wncyr5 <5.5-6.5> wncyr6 <6.5-7.5> wncyr7 <7.5-8.5> wncyr8
+  <8.5-9.5> wncyr9 <9.5-> wncyr10}{}
+\DeclareFontShape{OT2}{wncyr}{b}{n}{%
+  <-5.5> wncyb5 <5.5-6.5> wncyb6 <6.5-7.5> wncyb7 <7.5-8.5> wncyb8
+  <8.5-9.5> wncyb9 <9.5-> wncyb10}{}
+\DeclareMathAlphabet{\ya@mathcyr}{OT2}{wncyr}{m}{n}
+\SetMathAlphabet{\ya@mathcyr}{bold}{OT2}{wncyr}{b}{n}
+\DeclareUnicodeCharacter{0428}{\ensuremath{\ya@mathcyr{X}}}% Ш
+\RequirePackage[normalem]{ulem} 
 \RequirePackage[most]{tcolorbox}
 \RequirePackage[boxsize=13pt,centertableaux]{ytableau}
 \RequirePackage[
