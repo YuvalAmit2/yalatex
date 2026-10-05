@@ -52,14 +52,14 @@
     }
 }
 
-% This defines a new box type with the same universal style, where the arguments reflect slight variations in style:
+% This defines a new box type with the same universal style, where the arguments reflect slight variations in style. The key word is replaced by a custom name.
 % 1. Environment name
 % 2. Display name
 % 3. General color theme
 % 4. Cleverref Type
 % 5. Cleverref Type Plural
 % 6. Optional format changes
-\NewDocumentCommand{\newboxtype}{m m m m m O{}}{
+\NewDocumentCommand{\newnamedbox}{m m m m m O{}}{
 \NewTColorBox[use counter=maincounter, number within=section, crefname={#4}{#5}]{#1}{O{} O{}}
 {mybox,
 colframe=#3!50!black,
@@ -80,13 +80,35 @@ title=\ifblank{##1}{#2}{\textit{##1}},
 }
 }
 
-\newboxtype{thm}{Theorem}{thmcolor}{Theorem}{Theorems}
-\newboxtype{defn}{Definition}{defcolor}{Definition}{Definitions}
-\newboxtype{lem}{Lemma}{lemcolor}{Lemma}{Lemmas}
-\newboxtype{cor}{Corollary}{corcolor}{Corollary}{Corollaries}
-\newboxtype{prop}{Proposition}{propcolor}{Proposition}{Propositions}
-\newboxtype{rmk}{Remark}{rmkcolor}{Remark}{Remarks}
-\newboxtype{conj}{Conjecture}{conjcolor}{Conjecture}{Conjectures}
+% Same as newnamedbox, but the key word is not replaced
+\NewDocumentCommand{\newregbox}{m m m m m O{}}{
+\NewTColorBox[use counter=maincounter, number within=section, crefname={#4}{#5}]{#1}{O{} O{}}
+{mybox,
+colframe=#3!50!black,
+colbacktitle=#3!10,
+coltitle=#3,
+title=\ifblank{##1}{#2 \hfill \thetcbcounter}{#2 (\textit{##1}) \hfill  \thetcbcounter},
+##2,
+#6
+}
+\NewTColorBox{#1*}{O{} O{}}
+{mybox,
+colframe=#3!50!black,
+colbacktitle=#3!10,
+coltitle=#3,
+title=\ifblank{##1}{#2}{#2 (\textit{##1})},
+##2,
+#6
+}
+}
+
+\newnamedbox{thm}{Theorem}{thmcolor}{Theorem}{Theorems}
+\newregbox{defn}{Definition}{defcolor}{Definition}{Definitions}
+\newnamedbox{lem}{Lemma}{lemcolor}{Lemma}{Lemmas}
+\newregbox{cor}{Corollary}{corcolor}{Corollary}{Corollaries}
+\newnamedbox{prop}{Proposition}{propcolor}{Proposition}{Propositions}
+\newnamedbox{rmk}{Remark}{rmkcolor}{Remark}{Remarks}
+\newnamedbox{conj}{Conjecture}{conjcolor}{Conjecture}{Conjectures}
 
 \NewTColorBox[use counter=maincounter, number within=section]{notebox}{O{} O{}}
 {mybox,
