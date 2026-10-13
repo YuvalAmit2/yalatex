@@ -1,10 +1,6 @@
 % ya-macros.tex -- math macros for every yalatex mode.
-% (Moved here from the top of main.tex in Overleaf-Template.)
-%
-% Loaded automatically by yalatex.sty; don't \input it yourself.
-% It's a .tex file rather than .sty so VS Code's LaTeX Workshop can read the
-% definitions for its math hover preview. For that, keep each definition on
-% a single line, and point this setting at this file:
+% Loaded automatically by yalatex.sty
+% Load for Math Preview in LaTeX workshop with:
 %   "latex-workshop.hover.preview.newcommand.newcommandFile": "/Users/<you>/LaTeX/yalatex/ya-macros.tex"
 
 % Common Shorthand Commands
@@ -18,6 +14,11 @@
 \newcommand{\D}{\mathbb{D}}
 \renewcommand{\H}{\mathbb{H}}
 \renewcommand{\P}{\mathbb{P}}
+\newcommand{\cF}{\mathcal{F}}
+\newcommand{\cU}{\mathcal{U}}
+\newcommand{\cO}{\mathcal{O}}
+\newcommand{\cE}{\mathcal{E}}
+
 \newcommand{\mb}{\mathbb}
 \newcommand{\mc}{\mathcal}
 \newcommand{\mf}{\mathfrak}
@@ -27,6 +28,9 @@
 \renewcommand{\bar}{\overline}
 \renewcommand{\hat}{\widehat}
 \renewcommand{\tilde}{\widetilde}
+\newcommand{\liml}{\varprojlim}
+\newcommand{\limr}{\varinjlim}
+\newcommand{\vsim}{\wr}
 
 % Commands With Inputs
 \newcommand{\matr}[1]{\begin{pmatrix}#1\end{pmatrix}}
@@ -90,8 +94,19 @@
 \newcommand{\supp}{\operatorname{supp}}
 \newcommand{\rad}{\operatorname{rad}}
 \newcommand{\Geom}{\operatorname{Geom}}
-\newcommand{\Sel}{\operatorname{Sel}}\newcommand{\Ann}{\operatorname{Ann}}
+\newcommand{\Sel}{\operatorname{Sel}}
+\newcommand{\Ann}{\operatorname{Ann}}
+\newcommand{\Div}{\operatorname{Div}}
+\renewcommand{\div}{\operatorname{div}}
+\newcommand{\Sha}{\text{Ш}}
 \newcommand{\Pf}{\operatorname{Pf}}
+\newcommand{\Pic}{\operatorname{Pic}}
+\newcommand{\Frob}{\operatorname{Frob}}
+\newcommand{\Ind}{\operatorname{Ind}}
+\newcommand{\un}{\operatorname{un}}
+\newcommand{\Br}{\operatorname{Br}}
+\newcommand{\sep}{\operatorname{sep}}
+\newcommand{\inv}{\operatorname{inv}}
 
 % Category Theory
 \newcommand{\Ob}{\operatorname{Ob}}
@@ -101,12 +116,13 @@
 \newcommand{\Mod}{\operatorname{-\textbf{mod}}}
 \newcommand{\ab}{\operatorname{ab}}
 
+% Text in math
 \newcommand{\w}[1]{\operatorname{#1}}
 \newcommand{\bw}[1]{\mathbf{#1}}
 \renewcommand{\th}{^{\text{th}}}
 \newcommand{\st}{^{\text{st}}}
 \newcommand{\nd}{^{\text{nd}}}
 
-\newcommand{\Sha}{\text{Ш}}
+
 
 \endinput

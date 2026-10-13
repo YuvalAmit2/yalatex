@@ -107,7 +107,7 @@ title=\ifblank{##1}{#2}{#2 (\textit{##1})},
 \newnamedbox{lem}{Lemma}{lemcolor}{Lemma}{Lemmas}
 \newregbox{cor}{Corollary}{corcolor}{Corollary}{Corollaries}
 \newnamedbox{prop}{Proposition}{propcolor}{Proposition}{Propositions}
-\newnamedbox{rmk}{Remark}{rmkcolor}{Remark}{Remarks}
+% \newnamedbox{rmk}{Remark}{rmkcolor}{Remark}{Remarks}
 \newnamedbox{conj}{Conjecture}{conjcolor}{Conjecture}{Conjectures}
 
 \NewTColorBox[use counter=maincounter, number within=section]{notebox}{O{} O{}}
@@ -194,6 +194,7 @@ numbered=no,
 
 \newthmtype{ex}{Example}{Example}{Examples}{excolor}{maincounter}
 \newthmtype{que}{Question}{Question}{Questions}{quecolor}{maincounter}
+\newthmtype{rmk}{Remark}{Remark}{Remarks}{rmkcolor}{maincounter}
 \newthmtype{claim}{Claim}{Claim}{Claims}{black}{maincounter}
 
 \newcounter{exercisecounter}
