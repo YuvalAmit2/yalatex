@@ -79,4 +79,8 @@
 
 \allowdisplaybreaks % break equations between pages
 
+% For figures with inkscape
+\RequirePackage{import}
+\newcommand{\incfig}[2][\columnwidth]{\def\svgwidth{#1}\import{./graphics/}{#2.pdf_tex}}
+
 \endinput
