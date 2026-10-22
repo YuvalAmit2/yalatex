@@ -57,6 +57,16 @@
 \graphicspath{{graphics/}}  
 \usetikzlibrary{arrows,trees,positioning}
 
+% Inkscape figures (inkscape-figures, PDF+LaTeX export).
+%   \incfig{name}         graphics/name.pdf_tex at the size drawn in Inkscape
+%   \incfig[width]{name}  scaled to width; labels keep the document font size
+\RequirePackage{import}
+\NewDocumentCommand{\incfig}{O{} m}{%
+  \if\relax\detokenize{#1}\relax\else\def\svgwidth{#1}\fi
+  \IfFileExists{graphics/#2/#2.pdf_tex}%
+    {\import{./graphics/#2/}{#2.pdf_tex}}%
+    {\import{./graphics/}{#2.pdf_tex}}}
+
 % Code
 \RequirePackage{listings}
 \definecolor{codegreen}{rgb}{0,0.6,0}
@@ -78,9 +88,5 @@
 \lstset{style=mystyle}
 
 \allowdisplaybreaks % break equations between pages
-
-% For figures with inkscape
-\RequirePackage{import}
-\newcommand{\incfig}[2][\columnwidth]{\def\svgwidth{#1}\import{./graphics/}{#2.pdf_tex}}
 
 \endinput
