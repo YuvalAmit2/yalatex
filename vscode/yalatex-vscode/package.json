@@ -1,0 +1,14 @@
+{
+  "name": "yalatex-vscode",
+  "displayName": "yalatex",
+  "description": "Makes $ in LaTeX files pair up like { does: $ gives $|$, Backspace deletes both, \\$ is left alone.",
+  "version": "0.1.1",
+  "publisher": "yalatex",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/YuvalAmit2/yalatex" },
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other"],
+  "extensionDependencies": ["James-Yu.latex-workshop"],
+  "activationEvents": ["onLanguage:latex"],
+  "main": "./extension.js"
+}

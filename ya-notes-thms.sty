@@ -18,6 +18,33 @@
 
 \newcounter{maincounter}
 
+% \label inside a numbered box. tcolorbox numbers a box inside a group in its
+% title, so by the time the body starts that number is forgotten and a \label
+% in the body would pick up the section number instead. The box's "phantom"
+% code runs right after the numbering (and before its link target is placed),
+% so it saves the label state globally; the start of the body restores it.
+% \crefalias makes \cref use the box's own name ("Theorem", "Lemma", ...).
+% The older form \begin{thm}[Name][label=thm:x] still works too.
+\def\ya@savelabel{%
+  \global\let\ya@saved@currentlabel\@currentlabel
+  \global\let\ya@saved@currentHref\@currentHref
+  \global\let\ya@saved@currentlabelname\@currentlabelname
+  \global\let\ya@saved@crefcurrentlabel\cref@currentlabel
+  \ifdefined\@currentcounter\global\let\ya@saved@currentcounter\@currentcounter\fi}
+\def\ya@restorelabel{%
+  \let\@currentlabel\ya@saved@currentlabel
+  \let\@currentHref\ya@saved@currentHref
+  \let\@currentlabelname\ya@saved@currentlabelname
+  \let\cref@currentlabel\ya@saved@crefcurrentlabel
+  \ifdefined\@currentcounter\let\@currentcounter\ya@saved@currentcounter\fi}
+\tcbset{
+    ya label in body/.style={
+        code={\crefalias{maincounter}{#1}},
+        phantom={\ya@savelabel},
+        before upper pre={\ya@restorelabel}
+    }
+}
+
 \tcbset{
     mybox/.style={
         arc=3pt,
@@ -68,6 +95,8 @@ coltitle=#3,
 title=\ifblank{##1}{#2 \hfill \thetcbcounter}{\textit{##1} \hfill  \thetcbcounter},
 ##2,
 #6
+,
+ya label in body=#1
 }
 \NewTColorBox{#1*}{O{} O{}}
 {mybox,
@@ -90,6 +119,8 @@ coltitle=#3,
 title=\ifblank{##1}{#2 \hfill \thetcbcounter}{#2 (\textit{##1}) \hfill  \thetcbcounter},
 ##2,
 #6
+,
+ya label in body=#1
 }
 \NewTColorBox{#1*}{O{} O{}}
 {mybox,
@@ -110,13 +141,14 @@ title=\ifblank{##1}{#2}{#2 (\textit{##1})},
 % \newnamedbox{rmk}{Remark}{rmkcolor}{Remark}{Remarks}
 \newnamedbox{conj}{Conjecture}{conjcolor}{Conjecture}{Conjectures}
 
-\NewTColorBox[use counter=maincounter, number within=section]{notebox}{O{} O{}}
+\NewTColorBox[use counter=maincounter, number within=section, crefname={Note}{Notes}]{notebox}{O{} O{}}
 {mybox,
 colframe=notecolor!50!black,
 colbacktitle=notecolor!10,
 coltitle=notecolor,
 title=\ifblank{#1}{Note \hfill \thetcbcounter}{#1 \hfill \thetcbcounter},
 #2,
+ya label in body=notebox
 }
 
 \NewTColorBox{notebox*}{O{} O{}}

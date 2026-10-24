@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# newhw <name> ["Title"]  --  shortcut for: yanew homework <name> ["Title"]
-exec "$(dirname "${BASH_SOURCE[0]}")/yanew" homework "$@"

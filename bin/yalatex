@@ -1,0 +1,373 @@
+#!/usr/bin/env bash
+# yalatex -- command-line helper for the yalatex LaTeX template.
+# Run `yalatex help` for the list of commands.
+
+set -euo pipefail
+
+# --- Locate the yalatex folder ----------------------------------------------
+# This script lives in <yalatex>/bin. Follow symlinks so that a link to the
+# script elsewhere still finds the right folder. Set YALATEX_DIR to override.
+resolve_script() {
+  local src=${BASH_SOURCE[0]} dir
+  while [[ -L "$src" ]]; do
+    dir=$(cd -P "$(dirname "$src")" && pwd)
+    src=$(readlink "$src")
+    [[ "$src" == /* ]] || src="$dir/$src"
+  done
+  cd -P "$(dirname "$src")/.." && pwd
+}
+yalatex_dir=${YALATEX_DIR:-"$(resolve_script)"}
+
+# --- Output helpers ------------------------------------------------------------
+if [[ -t 1 ]]; then
+  bold=$'\e[1m'; green=$'\e[32m'; yellow=$'\e[33m'; red=$'\e[31m'; reset=$'\e[0m'
+else
+  bold=; green=; yellow=; red=; reset=
+fi
+die()  { echo "yalatex: $*" >&2; exit 1; }
+ok()   { echo "  ${green}✓${reset} $*"; }
+warn() { echo "  ${yellow}!${reset} $*"; }
+bad()  { echo "  ${red}✗${reset} $*"; }
+
+# --- Help -------------------------------------------------------------------------
+usage_line() {
+  case $1 in
+    newnotes|newhw|newpaper|newbeamer)
+      echo "yalatex $1 <name> [\"Title\"]" ;;
+    check)                echo "yalatex check" ;;
+    update)               echo "yalatex update" ;;
+    vscode-link-snippets) echo "yalatex vscode-link-snippets [snippets folder]" ;;
+    vscode-extension)     echo "yalatex vscode-extension" ;;
+    help)                 echo "yalatex help [command]" ;;
+    *) return 1 ;;
+  esac
+}
+
+help_text() {
+  case $1 in
+    newnotes|newhw|newpaper|newbeamer)
+      local kind=${1#new}; [[ $kind == hw ]] && kind=homework
+      cat <<EOF
+Usage: $(usage_line "$1")
+
+Creates ./<name>/<name>.tex from starters/starter-$kind.tex, plus an empty
+./<name>/graphics/ folder, and opens the file in VS Code.
+
+  <name>    letters, digits, - _ . only (no spaces)
+  "Title"   goes into \\title{...}; defaults to <name>. Use single quotes
+            if the title has \$ in it, e.g. 'Hodge Theory on \$\\mathbb{C}\$'.
+
+The author is taken from the YALATEX_AUTHOR environment variable. Set it once
+by adding this line to ~/.zshrc (bash: ~/.bash_profile on a Mac, ~/.bashrc
+on Linux), then open a new terminal:
+  export YALATEX_AUTHOR="Your Name"
+If it isn't set, the author is left as "Author".
+EOF
+      ;;
+    check)
+      cat <<EOF
+Usage: yalatex check
+
+Checks that everything yalatex needs is set up: that LaTeX finds yalatex.sty
+(and that it's this copy), that the yalatex command is on your PATH, that
+pdflatex, latexmk and biber are installed, which author name new documents
+will get, and the state of the optional VS Code pieces.
+EOF
+      ;;
+    update)
+      cat <<EOF
+Usage: yalatex update
+
+Downloads the latest yalatex from GitHub (git pull --ff-only in
+$yalatex_dir).
+If you have local changes that conflict, git stops and tells you; nothing
+is overwritten.
+EOF
+      ;;
+    vscode-link-snippets)
+      cat <<EOF
+Usage: yalatex vscode-link-snippets [snippets folder]
+
+Makes VS Code's LaTeX snippets file a link to vscode/latex.json in yalatex.
+Snippets you add with "Snippets: Configure Snippets" -> latex then land in
+the yalatex folder (commit them like any other change), and snippets added
+to yalatex arrive with \`yalatex update\`.
+
+If you already have a LaTeX snippets file, it is moved to
+latex.json.backup-<date> next to it first.
+
+The snippets folder defaults to VS Code's default profile:
+  macOS: ~/Library/Application Support/Code/User/snippets
+  Linux: ~/.config/Code/User/snippets
+To link a different profile, pass its snippets folder, e.g.
+  ~/Library/Application Support/Code/User/profiles/<id>/snippets
+EOF
+      ;;
+    vscode-extension)
+      cat <<EOF
+Usage: yalatex vscode-extension
+
+Installs the small yalatex VS Code extension (vscode/yalatex-vscode). It makes
+\$ in .tex files behave like {: typing \$ gives \$|\$, Backspace right after
+deletes both, typing the closing \$ steps over it, and \\\$ is left alone.
+It needs the LaTeX Workshop extension. Run this again after \`yalatex update\`
+if the extension changed (yalatex check tells you).
+Uninstall it from VS Code's Extensions panel (search "yalatex").
+EOF
+      ;;
+    *)
+      cat <<EOF
+${bold}yalatex${reset} -- helper for the yalatex LaTeX template ($yalatex_dir)
+
+New documents (in the current folder):
+  yalatex newnotes  <name> ["Title"]   course notes
+  yalatex newhw     <name> ["Title"]   homework
+  yalatex newpaper  <name> ["Title"]   paper (amsart)
+  yalatex newbeamer <name> ["Title"]   beamer presentation
+
+Maintenance:
+  yalatex check                        check that everything is set up
+  yalatex update                       download the latest yalatex
+
+VS Code (optional):
+  yalatex vscode-link-snippets         use yalatex's LaTeX snippets in VS Code
+  yalatex vscode-extension             install the \$-pairing extension
+
+  yalatex help <command>               details on one command
+EOF
+      ;;
+  esac
+}
+
+# --- New documents ----------------------------------------------------------------
+available_kinds() {
+  local f kinds=""
+  for f in "$yalatex_dir"/starters/starter-*.tex; do
+    [[ -e "$f" ]] || continue
+    f=${f##*/starter-}
+    kinds+="${kinds:+, }${f%.tex}"
+  done
+  echo "${kinds:-none}"
+}
+
+new_document() {
+  local cmd=$1 kind=$2; shift 2
+  [[ $# -ge 1 && $# -le 2 ]] || die "usage: $(usage_line "$cmd")"
+  local name=$1 title=${2:-$1}
+
+  # Letters, digits, '-', '_' and '.' only: spaces and other characters in a
+  # LaTeX file name cause trouble later.
+  [[ "$name" =~ ^[A-Za-z0-9._-]+$ ]] ||
+    die "'$name' is not a good file name; use letters, digits, - _ . only (no spaces)"
+
+  local starter="$yalatex_dir/starters/starter-$kind.tex"
+  [[ -f "$starter" ]] || die "no starter file for '$kind' (starters/starter-$kind.tex); available: $(available_kinds)"
+  [[ ! -e "$name" ]] || die "'$name' already exists here; nothing was created"
+
+  mkdir -p "$name/graphics"
+  local file="$name/$name.tex"
+
+  # Fill in the placeholders: the first {Title} on a \title line and the first
+  # {Author on an \author line. Values go in through the environment so that
+  # backslashes and & arrive untouched.
+  YA_TITLE="$title" YA_AUTHOR="${YALATEX_AUTHOR:-}" awk '
+    !t && /\\title/ && (i = index($0, "{Title}")) {
+      $0 = substr($0, 1, i) ENVIRON["YA_TITLE"] substr($0, i + 6); t = 1
+    }
+    !a && ENVIRON["YA_AUTHOR"] != "" && /\\author/ && (i = index($0, "{Author")) {
+      $0 = substr($0, 1, i) ENVIRON["YA_AUTHOR"] substr($0, i + 7); a = 1
+    }
+    { print }
+  ' "$starter" > "$file"
+
+  echo "Created $file"
+  [[ -n "${YALATEX_AUTHOR:-}" ]] ||
+    echo "(Author left as \"Author\": set YALATEX_AUTHOR to fill it in. See: yalatex help $cmd)"
+
+  # Open the file in VS Code. On a Mac, `open -b` hands the file to the VS Code
+  # that's already running; the `code` command would briefly start a second
+  # copy, which leaves an extra VS Code icon in the Dock. `code` is the
+  # fallback (e.g. on Linux).
+  if [[ "$(uname)" == Darwin ]] && open -b com.microsoft.VSCode "$file" 2>/dev/null; then
+    :
+  elif command -v code >/dev/null 2>&1; then
+    code "$file"
+  fi
+}
+
+# --- VS Code helpers ------------------------------------------------------------------
+vscode_user_dir() {
+  if [[ "$(uname)" == Darwin ]]; then
+    echo "$HOME/Library/Application Support/Code/User"
+  else
+    echo "${XDG_CONFIG_HOME:-$HOME/.config}/Code/User"
+  fi
+}
+
+vscode_cli() {
+  if command -v code >/dev/null 2>&1; then
+    command -v code
+  elif [[ -x "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" ]]; then
+    echo "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"
+  else
+    return 1
+  fi
+}
+
+ext_dir="$yalatex_dir/vscode/yalatex-vscode"
+ext_version() { sed -n 's/^ *"version": *"\([^"]*\)".*/\1/p' "$ext_dir/package.json" | head -1; }
+
+link_snippets() {
+  [[ $# -le 1 ]] || die "usage: $(usage_line vscode-link-snippets)"
+  local source="$yalatex_dir/vscode/latex.json"
+  [[ -f "$source" ]] || die "missing $source"
+  local folder=${1:-"$(vscode_user_dir)/snippets"}
+  local target="$folder/latex.json"
+
+  if [[ -L "$target" && "$(readlink "$target")" == "$source" ]]; then
+    echo "Already linked: $target -> $source"
+    return
+  fi
+  [[ -d "$(dirname "$folder")" ]] ||
+    die "can't find VS Code's settings folder $(dirname "$folder"). Is VS Code installed? Pass the snippets folder explicitly: $(usage_line vscode-link-snippets)"
+  mkdir -p "$folder"
+  if [[ -e "$target" || -L "$target" ]]; then
+    local backup="$target.backup-$(date +%Y%m%d-%H%M%S)"
+    mv "$target" "$backup"
+    echo "Moved your existing snippets file to $backup"
+  fi
+  ln -s "$source" "$target"
+  echo "Linked $target -> $source"
+  echo "VS Code picks this up right away. New snippets you add there are saved in yalatex; commit them with git."
+}
+
+install_extension() {
+  [[ $# -eq 0 ]] || die "usage: $(usage_line vscode-extension)"
+  local cli; cli=$(vscode_cli) ||
+    die "can't find VS Code's 'code' command. In VS Code: Cmd+Shift+P -> \"Shell Command: Install 'code' command in PATH\", then try again."
+  command -v zip >/dev/null 2>&1 || die "the 'zip' command is needed to package the extension"
+  [[ -f "$ext_dir/package.json" ]] || die "missing $ext_dir"
+
+  # A .vsix is a zip of the extension folder plus two manifest files.
+  local tmp; tmp=$(mktemp -d)
+  mkdir -p "$tmp/pkg/extension"
+  cp "$ext_dir/package.json" "$ext_dir/extension.js" "$ext_dir/README.md" "$tmp/pkg/extension/"
+  cp "$ext_dir/vsix/[Content_Types].xml" "$tmp/pkg/"
+  sed "s/@VERSION@/$(ext_version)/" "$ext_dir/vsix/extension.vsixmanifest" > "$tmp/pkg/extension.vsixmanifest"
+  local vsix="$tmp/yalatex-vscode-$(ext_version).vsix"
+  (cd "$tmp/pkg" && zip -qrX "$vsix" "[Content_Types].xml" extension.vsixmanifest extension)
+  "$cli" --install-extension "$vsix" --force
+  rm -rf "$tmp"
+  echo "Reload VS Code windows to use it (Cmd+Shift+P -> \"Developer: Reload Window\")."
+}
+
+installed_extension_version() {
+  local cli; cli=$(vscode_cli) || return 1
+  "$cli" --list-extensions --show-versions 2>/dev/null | sed -n 's/^yalatex\.yalatex-vscode@//p'
+}
+
+# --- check -----------------------------------------------------------------------
+check() {
+  echo "${bold}yalatex${reset} at $yalatex_dir"
+  local problems=0
+
+  echo "LaTeX:"
+  local tool
+  for tool in pdflatex latexmk biber kpsewhich; do
+    if command -v "$tool" >/dev/null 2>&1; then ok "$tool"
+    else bad "$tool not found (install MacTeX or TeX Live)"; problems=1; fi
+  done
+  if command -v kpsewhich >/dev/null 2>&1; then
+    local found; found=$(kpsewhich yalatex.sty 2>/dev/null || true)
+    if [[ -z "$found" ]]; then
+      bad "LaTeX can't find yalatex.sty (run install.sh, or see the README)"; problems=1
+    elif [[ "$(cd -P "$(dirname "$found")" && pwd)" == "$(cd -P "$yalatex_dir" && pwd)" ]]; then
+      ok "LaTeX finds yalatex.sty: $found"
+    else
+      warn "LaTeX finds a different yalatex.sty: $found"
+    fi
+  fi
+
+  echo "Terminal:"
+  local onpath; onpath=$(command -v yalatex 2>/dev/null || true)
+  if [[ -z "$onpath" ]]; then
+    bad "yalatex is not on your PATH (add $yalatex_dir/bin to PATH)"; problems=1
+  else
+    ok "yalatex command: $onpath"
+  fi
+  if [[ -n "${YALATEX_AUTHOR:-}" ]]; then
+    ok "author for new documents: $YALATEX_AUTHOR"
+  else
+    warn "YALATEX_AUTHOR not set; new documents get \"Author\" (see: yalatex help newnotes)"
+  fi
+
+  echo "Updates:"
+  if git -C "$yalatex_dir" rev-parse --git-dir >/dev/null 2>&1; then
+    local changes; changes=$(git -C "$yalatex_dir" status --porcelain | wc -l | tr -d ' ')
+    [[ "$changes" == 0 ]] && ok "no local changes" || warn "$changes changed file(s) in $yalatex_dir not committed"
+    ok "last update: $(git -C "$yalatex_dir" log -1 --format='%cd (%h)' --date=short)"
+  else
+    warn "not a git checkout, so \`yalatex update\` won't work"
+  fi
+
+  echo "VS Code (optional):"
+  local snip="$(vscode_user_dir)/snippets/latex.json"
+  if [[ -L "$snip" && "$(readlink "$snip")" == "$yalatex_dir/vscode/latex.json" ]]; then
+    ok "snippets linked (default profile)"
+  else
+    echo "  - snippets not linked in the default profile (yalatex vscode-link-snippets)"
+  fi
+  local have; have=$(installed_extension_version || true)
+  if [[ -z "$have" ]]; then
+    echo "  - \$ extension not installed (yalatex vscode-extension)"
+  elif [[ "$have" == "$(ext_version)" ]]; then
+    ok "\$ extension installed ($have)"
+  else
+    warn "\$ extension $have installed, $(ext_version) available: run yalatex vscode-extension"
+  fi
+
+  return $problems
+}
+
+# --- update --------------------------------------------------------------------------
+update() {
+  [[ $# -eq 0 ]] || die "usage: $(usage_line update)"
+  git -C "$yalatex_dir" rev-parse --git-dir >/dev/null 2>&1 ||
+    die "$yalatex_dir is not a git checkout, so it can't be updated with git"
+  local before; before=$(git -C "$yalatex_dir" rev-parse HEAD)
+  local ext_before; ext_before=$(ext_version)
+  git -C "$yalatex_dir" pull --ff-only
+  if [[ "$(git -C "$yalatex_dir" rev-parse HEAD)" == "$before" ]]; then
+    echo "yalatex is up to date."
+    return
+  fi
+  echo
+  echo "New in yalatex:"
+  git -C "$yalatex_dir" log --format='  %s' "$before..HEAD"
+  if [[ "$(ext_version)" != "$ext_before" ]] && [[ -n "$(installed_extension_version || true)" ]]; then
+    echo
+    echo "The VS Code extension changed: run \`yalatex vscode-extension\` to install the new version."
+  fi
+}
+
+# --- Dispatch -----------------------------------------------------------------------
+cmd=${1:-help}
+[[ $# -gt 0 ]] && shift
+case $cmd in
+  newnotes)  new_document newnotes notes "$@" ;;
+  newhw)     new_document newhw homework "$@" ;;
+  newpaper)  new_document newpaper paper "$@" ;;
+  newbeamer) new_document newbeamer beamer "$@" ;;
+  check)     check ;;
+  update)    update "$@" ;;
+  vscode-link-snippets) link_snippets "$@" ;;
+  vscode-extension)     install_extension "$@" ;;
+  help|-h|--help)
+    if [[ $# -ge 1 ]]; then
+      usage_line "$1" >/dev/null || die "unknown command '$1'; see: yalatex help"
+      help_text "$1"
+    else
+      help_text ""
+    fi ;;
+  *) die "unknown command '$cmd'; see: yalatex help" ;;
+esac

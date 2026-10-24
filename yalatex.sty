@@ -1,17 +1,20 @@
 % yalatex.sty -- Yuval Amit's LaTeX template.
 %
 % Usage (right after \documentclass):
-%   \usepackage[notes]{yalatex}    course notes and problem sets
+%   \usepackage[notes]{yalatex}    course notes
+%   \usepackage[homework]{yalatex} homework / problem sets
 %   \usepackage[paper]{yalatex}    papers (use with amsart)
 %   \usepackage[beamer]{yalatex}   presentations (use with beamer)
 %
 % With no option, the mode follows the document class:
 %   beamer -> beamer,  amsart -> paper,  anything else -> notes.
+% (Homework mode is only used when asked for.)
 %
 % Files loaded, in order:
 %   ya-base.sty                            packages shared by every mode
 %   ya-notes.sty  + ya-notes-thms.sty      notes mode
 %   ya-paper.sty  + ya-paper-thms.sty      paper mode
+%   ya-homework.sty + ya-homework-thms.sty homework mode
 %   ya-beamer.sty                          beamer mode
 %   ya-macros.tex                          math macros (all modes)
 \NeedsTeXFormat{LaTeX2e}

@@ -25,38 +25,35 @@ headpunct=.
 % Custom command for quickly building a new theorem type. The arguments are as follows:
 % 1. Environment Name
 % 2. Display Name
-% 3. Lowercase reference
-% 4. Lowercase references
-% 5. Uppercase reference
-% 6. Uppercase references
-% 7. Optional arguments
-\NewDocumentCommand{\newthmtype}{m m m m m m O{}}{
+% 3. Reference name (singular), used by \cref and \Cref
+% 4. Reference name (plural)
+% 5. Optional arguments
+\NewDocumentCommand{\newthmtype}{m m m m O{}}{
 \declaretheorem[name=#2,
 sibling=maincounter,
-refname={#3,#4},
-Refname={#5,#6},
+Refname={#3,#4},
 style=regular,
-#7
+#5
 ]{#1}
 \declaretheorem[name=#2,
-refname={#3,#4},
-Refname={#5,#6},
+Refname={#3,#4},
 style=regular,
 numbered=no,
-#7
+#5
 ]{#1*}
 }
 
-\newthmtype{thm}{Theorem}{theorem}{theorems}{Theorem}{Theorems}
-\newthmtype{prop}{Proposition}{proposition}{propositions}{Proposition}{Propositions}
-\newthmtype{rmk}{Remark}{remark}{remarks}{Remark}{Remarks}
-\newthmtype{cor}{Corollary}{corollary}{corollaries}{Corollary}{Corollaries}
-\newthmtype{defn}{Definition}{definition}{definitions}{Definition}{Definitions}
-\newthmtype{lem}{Lemma}{lemma}{lemmas}{Lemma}{Lemmas}
-\newthmtype{ex}{Example}{example}{examples}{Example}{Examples}
-\newthmtype{que}{Question}{question}{questions}{Question}{Questions}
-\newthmtype{exer}{Exercise}{exercise}{exercises}{Exercise}{Exercises}
-\newthmtype{conj}{Conjecture}{conjecture}{conjectures}{Conjecture}{Conjectures}
+\newthmtype{thm}{Theorem}{Theorem}{Theorems}
+\newthmtype{prop}{Proposition}{Proposition}{Propositions}
+\newthmtype{rmk}{Remark}{Remark}{Remarks}
+\newthmtype{cor}{Corollary}{Corollary}{Corollaries}
+\newthmtype{defn}{Definition}{Definition}{Definitions}
+\newthmtype{lem}{Lemma}{Lemma}{Lemmas}
+\newthmtype{ex}{Example}{Example}{Examples}
+\newthmtype{que}{Question}{Question}{Questions}
+\newthmtype{exercise}{Exercise}{Exercise}{Exercises}
+\newthmtype{claim}{Claim}{Claim}{Claims}
+\newthmtype{conj}{Conjecture}{Conjecture}{Conjectures}
 
 
 % AI-generated code: creates a thmtools environment which has a customizable name, similar to notebox.

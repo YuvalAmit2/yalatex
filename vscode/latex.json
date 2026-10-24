@@ -1,0 +1,109 @@
+{
+	// yalatex snippets for VS Code (LaTeX files).
+	// Type the prefix and press Enter or Tab. Prefixes are all caps so they
+	// don't pop up while you write ordinary words.
+	// `yalatex vscode-link-snippets` makes VS Code use this file directly, so
+	// snippets added with "Snippets: Configure Snippets" -> latex are saved here.
+	//
+	// $1, $2 are tab stops (Tab moves to the next), $0 is where the cursor
+	// ends up, ${1:$TM_SELECTED_TEXT} wraps the selected text.
+
+	// --- Text and math -----------------------------------------------------
+	"Partial Derivative": {
+		"prefix": "PART",
+		"body": "\\partder[$3]{$1}{$2}$0",
+		"description": "\\partder[order]{function}{variable}"
+	},
+	"Matrix": {
+		"prefix": "MATR",
+		"body": "\\matr{ $0 }",
+		"description": "\\matr{ … } (pmatrix)"
+	},
+	"Italic text": {
+		"prefix": "TIT",
+		"body": "\\textit{${1:$TM_SELECTED_TEXT}}$0",
+		"description": "\\textit{…}"
+	},
+	"Bold text": {
+		"prefix": "TBF",
+		"body": "\\textbf{${1:$TM_SELECTED_TEXT}}$0",
+		"description": "\\textbf{…}"
+	},
+
+	// --- Theorem-like environments -------------------------------------------
+	"Theorem": {
+		"prefix": "THM",
+		"body": ["\\begin{thm}", "$0", "\\end{thm}"],
+		"description": "\\begin{thm}…\\end{thm}"
+	},
+	"Proposition": {
+		"prefix": "PROP",
+		"body": ["\\begin{prop}", "$0", "\\end{prop}"],
+		"description": "\\begin{prop}…\\end{prop}"
+	},
+	"Lemma": {
+		"prefix": "LEM",
+		"body": ["\\begin{lem}", "$0", "\\end{lem}"],
+		"description": "\\begin{lem}…\\end{lem}"
+	},
+	"Corollary": {
+		"prefix": "COR",
+		"body": ["\\begin{cor}", "$0", "\\end{cor}"],
+		"description": "\\begin{cor}…\\end{cor}"
+	},
+	"Conjecture": {
+		"prefix": "CONJ",
+		"body": ["\\begin{conj}", "$0", "\\end{conj}"],
+		"description": "\\begin{conj}…\\end{conj}"
+	},
+	"Definition": {
+		"prefix": "DEFN",
+		"body": ["\\begin{defn}", "$0", "\\end{defn}"],
+		"description": "\\begin{defn}…\\end{defn}"
+	},
+	"Example": {
+		"prefix": "EXAM",
+		"body": ["\\begin{ex}", "$0", "\\end{ex}"],
+		"description": "\\begin{ex}…\\end{ex}"
+	},
+	"Remark": {
+		"prefix": "RMK",
+		"body": ["\\begin{rmk}", "$0", "\\end{rmk}"],
+		"description": "\\begin{rmk}…\\end{rmk}"
+	},
+	"Claim": {
+		"prefix": "CLM",
+		"body": ["\\begin{claim}", "$0", "\\end{claim}"],
+		"description": "\\begin{claim}…\\end{claim}"
+	},
+	"Question": {
+		"prefix": "QUE",
+		"body": ["\\begin{que}", "$0", "\\end{que}"],
+		"description": "\\begin{que}…\\end{que}"
+	},
+	"Exercise": {
+		"prefix": "EXER",
+		"body": ["\\begin{exercise}", "$0", "\\end{exercise}"],
+		"description": "\\begin{exercise}…\\end{exercise}"
+	},
+	"Note box": {
+		"prefix": "NOTEB",
+		"body": ["\\begin{notebox}", "$0", "\\end{notebox}"],
+		"description": "\\begin{notebox}…\\end{notebox} (notes mode)"
+	},
+	"Note (unboxed)": {
+		"prefix": "NOTET",
+		"body": ["\\begin{notethm}", "$0", "\\end{notethm}"],
+		"description": "\\begin{notethm}…\\end{notethm} (notes/homework; paper mode calls it note)"
+	},
+	"Proof": {
+		"prefix": "PRF",
+		"body": ["\\begin{proof}", "$0", "\\end{proof}"],
+		"description": "\\begin{proof}…\\end{proof}"
+	},
+	"Solution": {
+		"prefix": "SOL",
+		"body": ["\\begin{solution}", "$0", "\\end{solution}"],
+		"description": "\\begin{solution}…\\end{solution}"
+	}
+}
