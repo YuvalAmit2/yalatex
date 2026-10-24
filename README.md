@@ -1,5 +1,7 @@
 # yalatex
 
+This README is a work in progress.
+
 My $\LaTeX$ template for math notes, homework, papers and presentations. When properly setup, every document on your machine should be able to see the package, so you only need one local copy of the preamble files. 
 
 ```latex
