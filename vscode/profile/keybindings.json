@@ -1,0 +1,8 @@
+[
+  // Build the current LaTeX document (Cmd+Enter on a Mac, Ctrl+Enter on Linux).
+  {
+    "key": "@MOD@+enter",
+    "command": "latex-workshop.build",
+    "when": "editorLangId == latex"
+  }
+]

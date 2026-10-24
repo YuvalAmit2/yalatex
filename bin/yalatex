@@ -38,6 +38,7 @@ usage_line() {
     update)               echo "yalatex update" ;;
     vscode-link-snippets) echo "yalatex vscode-link-snippets [snippets folder]" ;;
     vscode-extension)     echo "yalatex vscode-extension" ;;
+    vscode-profile)       echo "yalatex vscode-profile" ;;
     help)                 echo "yalatex help [command]" ;;
     *) return 1 ;;
   esac
@@ -103,6 +104,28 @@ To link a different profile, pass its snippets folder, e.g.
   ~/Library/Application Support/Code/User/profiles/<id>/snippets
 EOF
       ;;
+    vscode-profile)
+      cat <<EOF
+Usage: yalatex vscode-profile
+
+Writes yalatex.code-profile into the current folder. Nothing in VS Code
+changes until you import it. In VS Code: Cmd+Shift+P -> "Profiles: Open
+Profiles (UI)" -> the arrow next to "New Profile" -> Import Profile... ->
+Select File... -> choose the file. That creates a separate profile named
+"yalatex"; your current profile is left as it is, and you can switch
+between them per window.
+
+The profile contains:
+  - LaTeX Workshop (installed into the profile)
+  - the settings in vscode/profile/settings.jsonc, with the hover-preview
+    macros path pointing at this yalatex folder
+  - Cmd+Enter (Ctrl+Enter on Linux) to build
+  - the snippets in vscode/latex.json
+It does not contain the \$ extension; install that with yalatex vscode-extension.
+The profile is a copy: rerun this command and import again to pick up
+later changes.
+EOF
+      ;;
     vscode-extension)
       cat <<EOF
 Usage: yalatex vscode-extension
@@ -132,6 +155,7 @@ Maintenance:
 VS Code (optional):
   yalatex vscode-link-snippets         use yalatex's LaTeX snippets in VS Code
   yalatex vscode-extension             install the \$-pairing extension
+  yalatex vscode-profile               write a VS Code profile to import
 
   yalatex help <command>               details on one command
 EOF
@@ -261,6 +285,50 @@ install_extension() {
   echo "Reload VS Code windows to use it (Cmd+Shift+P -> \"Developer: Reload Window\")."
 }
 
+# Print stdin as one JSON string (quoted and escaped).
+json_string() {
+  # Character by character, because backslashes in gsub() replacements differ
+  # between the awk on macOS and the ones on Linux.
+  awk 'BEGIN { bs = "\\"; q = "\""; printf "%s", q }
+       { if (NR > 1) printf "%s", bs "n"
+         n = length($0)
+         for (i = 1; i <= n; i++) {
+           c = substr($0, i, 1)
+           if (c == bs)        printf "%s", bs bs
+           else if (c == q)    printf "%s", bs q
+           else if (c == "\t") printf "%s", bs "t"
+           else if (c == "\r") printf "%s", bs "r"
+           else                printf "%s", c
+         } }
+       END { printf "%s", q }'
+}
+
+write_profile() {
+  [[ $# -eq 0 ]] || die "usage: $(usage_line vscode-profile)"
+  local dir="$yalatex_dir/vscode/profile" out="yalatex.code-profile"
+  local platform=2 mod=ctrl          # VS Code's platform numbers: 1 = Mac, 2 = Linux
+  [[ "$(uname)" == Darwin ]] && platform=1 mod=cmd
+  [[ ! -e "$out" ]] || die "$out already exists here; delete or rename it first"
+
+  local settings keybindings snippets
+  settings=$(YA_MACROS="$yalatex_dir/ya-macros.tex" awk '{ i = index($0, "@YALATEX_MACROS@")
+      if (i) $0 = substr($0, 1, i - 1) ENVIRON["YA_MACROS"] substr($0, i + 16); print }' "$dir/settings.jsonc")
+  keybindings=$(sed "s/@MOD@/$mod/" "$dir/keybindings.json")
+  snippets=$(cat "$yalatex_dir/vscode/latex.json")
+
+  {
+    printf '{\n  "name": "yalatex",\n'
+    printf '  "settings": %s,\n' "$(printf '{"settings":%s}' "$(json_string <<<"$settings")" | json_string)"
+    printf '  "keybindings": %s,\n' "$(printf '{"platform":%s,"keybindings":%s}' "$platform" "$(json_string <<<"$keybindings")" | json_string)"
+    printf '  "snippets": %s,\n' "$(printf '{"snippets":{"latex.json":%s}}' "$(json_string <<<"$snippets")" | json_string)"
+    printf '  "extensions": %s\n}\n' "$(printf '[{"identifier":{"id":"james-yu.latex-workshop"},"displayName":"LaTeX Workshop"}]' | json_string)"
+  } > "$out"
+  echo "Wrote $out"
+  echo "To use it: in VS Code, Cmd+Shift+P -> \"Profiles: Open Profiles (UI)\" -> arrow next to \"New Profile\""
+  echo "  -> Import Profile... -> Select File... -> choose $out"
+  echo "It becomes a separate profile named \"yalatex\"; your current setup is not changed. See: yalatex help vscode-profile"
+}
+
 installed_extension_version() {
   local cli; cli=$(vscode_cli) || return 1
   "$cli" --list-extensions --show-versions 2>/dev/null | sed -n 's/^yalatex\.yalatex-vscode@//p'
@@ -278,7 +346,7 @@ check() {
     else bad "$tool not found (install MacTeX or TeX Live)"; problems=1; fi
   done
   if command -v kpsewhich >/dev/null 2>&1; then
-    local found; found=$(kpsewhich yalatex.sty 2>/dev/null || true)
+    local found; found=$(cd / && kpsewhich yalatex.sty 2>/dev/null || true)
     if [[ -z "$found" ]]; then
       bad "LaTeX can't find yalatex.sty (run install.sh, or see the README)"; problems=1
     elif [[ "$(cd -P "$(dirname "$found")" && pwd)" == "$(cd -P "$yalatex_dir" && pwd)" ]]; then
@@ -362,6 +430,7 @@ case $cmd in
   update)    update "$@" ;;
   vscode-link-snippets) link_snippets "$@" ;;
   vscode-extension)     install_extension "$@" ;;
+  vscode-profile)       write_profile "$@" ;;
   help|-h|--help)
     if [[ $# -ge 1 ]]; then
       usage_line "$1" >/dev/null || die "unknown command '$1'; see: yalatex help"

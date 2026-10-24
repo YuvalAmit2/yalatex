@@ -4,9 +4,9 @@ Makes `$` in `.tex` files behave like `{`:
 
 | You type | You get |
 |---|---|
-| `$` | `$|$` (cursor in the middle) |
+| `$` | `$\|$` (cursor in the middle) |
 | Backspace right after | both `$` deleted |
-| `x` then `$` | `$x$|` (the closing `$` is stepped over, not doubled) |
+| `x` then `$` | `$x$\|` (the closing `$` is stepped over, not doubled) |
 | `\$` | `\$` (a literal dollar sign; nothing added) |
 | `$` with text selected | `$text$` |
 

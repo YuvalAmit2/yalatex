@@ -1,0 +1,36 @@
+{
+  // yalatex VS Code settings. `yalatex vscode-profile` puts these into a
+  // separate VS Code profile; the README shows each one as a copy-paste block.
+
+  // Build only when you press Cmd+Enter (Ctrl+Enter on Linux), like Overleaf's
+  // Recompile button. The default, "onFileChange", builds on every save.
+  "latex-workshop.latex.autoBuild.run": "never",
+
+  // Save automatically one second after you stop typing.
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+
+  // The PDF goes next to the .tex file (the default); everything else LaTeX
+  // writes (.aux, .log, .toc, ...) goes into a build/ folder, which is hidden
+  // from the file tree along with the .synctex.gz file.
+  "latex-workshop.latex.auxDir": "%DIR%/build",
+  "files.exclude": {
+    "**/build": true,
+    "**/*.synctex.gz": true
+  },
+
+  // Hover preview of math knows yalatex's macros (\Z, \Hom, \paren, ...).
+  "latex-workshop.hover.preview.newcommand.newcommandFile": "@YALATEX_MACROS@",
+
+  // Type @[ and press Enter for display math on three lines:
+  //   \[
+  //   |
+  //   \]
+  "latex-workshop.intellisense.atSuggestion.user": {
+    "@[": "\\[\n$0\n\\]"
+  },
+
+  // LaTeX errors and warnings go to the Problems panel instead of pop-ups.
+  "latex-workshop.message.error.show": false,
+  "latex-workshop.message.warning.show": false
+}
