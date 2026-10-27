@@ -30,10 +30,14 @@ spaceabove=6pt,
 spacebelow=6pt,
 headfont=\normalfont\bfseries,
 notefont=\mdseries, notebraces={(}{)},
-bodyfont=\normalfont\bfseries\boldmath,
+bodyfont=\normalfont\itshape,
 postheadspace=5pt,
 headpunct=.
 ]{regular}
+
+\declaretheoremstyle[
+bodyfont=\normalfont\bfseries\boldmath
+]{boldstyle}
 
 % AI-generated code (the block below):
 % This makes it so thmtools environments can have their options edited (namely, they can be labeled) with a second optional argument, much like my thmbox envrionments.
@@ -85,7 +89,7 @@ numbered=no,
 \newthmtype{claim}{Claim}{Claim}{Claims}{black}{maincounter}
 
 \newcounter{exercisecounter}[section]
-\newthmtype{exercise}{Exercise}{Exercise}{Exercises}{exercolor}{exercisecounter}
+\newthmtype{exercise}{Exercise}{Exercise}{Exercises}{exercolor}{exercisecounter}[style=boldstyle]
 
 % AI-generated code: creates a thmtools environment which has a customizable name, similar to notebox.
 \newcommand\notethmname{Note}
