@@ -29,6 +29,16 @@
 		"body": "\\textbf{${1:$TM_SELECTED_TEXT}}$0",
 		"description": "\\textbf{…}"
 	},
+	"Implies": {
+		"prefix": "IMP",
+		"body": "($\\implies$)",
+		"description": "($\\implies$)"
+	},
+	"Implied by": {
+		"prefix": "IMB",
+		"body": "($\\impliedby$)",
+		"description": "($\\impliedby$)"
+	},
 
 	// --- Theorem-like environments -------------------------------------------
 	"Theorem": {
