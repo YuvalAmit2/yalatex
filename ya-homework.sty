@@ -43,6 +43,9 @@
 \postdate{\centering\par\vspace{3em}}
 \renewcommand{\maketitlehookd}{\vspace{-1cm}}
 
+\newlist{exeritemenv}{enumerate}{1}
+\setlist[exeritemenv,1]{label=(a),before=\bfseries\boldmath}
 
+\newenvironment{exeritem}[1][(a)]{\begin{exeritemenv} \item[#1]}{\normalfont \boldmath \end{exeritemenv}}
 
 \endinput
