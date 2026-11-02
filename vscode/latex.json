@@ -8,7 +8,7 @@
 	// $1, $2 are tab stops (Tab moves to the next), $0 is where the cursor
 	// ends up, ${1:$TM_SELECTED_TEXT} wraps the selected text.
 
-	// --- Text and math -----------------------------------------------------
+	// ----- Text and math -----
 	"Partial Derivative": {
 		"prefix": "PART",
 		"body": "\\partder[$3]{$1}{$2}$0",
@@ -40,7 +40,7 @@
 		"description": "($\\impliedby$)"
 	},
 
-	// --- Theorem-like environments -------------------------------------------
+	// ----- Theorem-like environments -----
 	"Theorem": {
 		"prefix": "THM",
 		"body": ["\\begin{thm}", "$0", "\\end{thm}"],
@@ -93,7 +93,7 @@
 	},
 	"Exercise": {
 		"prefix": "EXER",
-		"body": ["\\begin{exercise}", "$0", "\\end{exercise}"],
+		"body": ["\\begin{exercise}[$1]", "$2", "\\end{exercise}"],
 		"description": "\\begin{exercise}…\\end{exercise}"
 	},
 	"Note box": {
@@ -115,5 +115,17 @@
 		"prefix": "SOL",
 		"body": ["\\begin{solution}", "$0", "\\end{solution}"],
 		"description": "\\begin{solution}…\\end{solution}"
-	}
+	},
+	"Exeritem": {
+		"prefix": "EXIT",
+		"body": ["\\begin{exeritem}[($1)]", "$2", "\\end{exeritem}"],
+		"description": "\\begin{exeritem}[]…\\end{exeritem}"
+	},
+
+	// ----- Beamer -----
+	"Frame": {
+		"prefix": "FRA",
+		"body": ["\\begin{frame}{$1}", "$2", "\\end{frame}"],
+		"description": "\\begin{frame}[]…\\end{frame}"
+	},
 }
