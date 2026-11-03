@@ -3,10 +3,13 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{ya-notes}[2026/09/29 yalatex: page layout, fonts, headers and ToC for notes mode]
 
+\RequirePackage[shortlabels]{enumitem}
+
 %%% References %%%
 \RequirePackage{hyperref}
 \RequirePackage[nameinlink,capitalise]{cleveref}
 \hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=cyan}
+\numberwithin{equation}{section}
 
 %%% Sections of Table of Contents %%%
 % Customize section formatting

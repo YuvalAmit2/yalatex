@@ -39,6 +39,11 @@
 		"body": "($\\impliedby$)",
 		"description": "($\\impliedby$)"
 	},
+	"Term": {
+		"prefix": "TERM",
+		"body": "\\term[$3]{$1}$2",
+		"description": "\\term[]{}"
+	},
 
 	// ----- Theorem-like environments -----
 	"Theorem": {
@@ -126,6 +131,12 @@
 	"Frame": {
 		"prefix": "FRA",
 		"body": ["\\begin{frame}{$1}", "$2", "\\end{frame}"],
-		"description": "\\begin{frame}[]…\\end{frame}"
+		"description": "\\begin{frame}{}…\\end{frame}"
+	},
+
+	"Block": {
+		"prefix": "BLO",
+		"body": ["\\begin{block}{$1}", "$2", "\\end{block}"],
+		"description": "\\begin{block}[]…\\end{block}"
 	},
 }
