@@ -32,5 +32,8 @@
 
   // LaTeX errors and warnings go to the Problems panel instead of pop-ups.
   "latex-workshop.message.error.show": false,
-  "latex-workshop.message.warning.show": false
+  "latex-workshop.message.warning.show": false,
+
+  // Lualatex
+  "latex-workshop.latex.recipe.default": "latexmk (lualatex)"
 }
