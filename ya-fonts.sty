@@ -33,6 +33,22 @@
   % letters (the Computer Modern-like F, O, A, ...) come from KpMath, in
   % regular and bold. \mathscr stays XCharter's script.
   \setmathfont{KpMath-Regular.otf}[range={cal,bfcal}, StylisticSet=1, BoldFont=KpMath-Bold.otf]
+  % \mapstochar (the bar of \mapsto, used by \xmapsto and so by \maps) is a
+  % slot in the old Computer Modern symbol font; in a Unicode math font that
+  % slot is the digit 7, so \maps came out as "7->". Draw the bar instead,
+  % sized like the bar of XCharter's own |-> in every style (text, scripts),
+  % thicker in bold formulas.
+  \protected\def\mapstochar{\mathrel{\mathpalette\ya@mapsbar\relax}}
+  \def\ya@mapsbar#1#2{%
+    \dimen@=\Umathquad#1\relax
+    \dimen2=\ifx\math@version\ya@boldname .075\dimen@\else .05\dimen@\fi
+    \vcenter{\hbox{\kern.056\dimen@
+      \vrule width\dimen2 height.155\dimen@ depth.155\dimen@
+      \kern-\dimen2\kern-.056\dimen@}}}
+  \def\ya@boldname{bold}
+  % XCharter's bold math font has no |-> glyph, so build \mapsto from the
+  % bar and an arrow (it looks the same as the glyph in normal weight).
+  \AddToHook{begindocument/end}{\protected\def\mapsto{\mapstochar\rightarrow}}
   % unicode-math (re)defines its symbol commands at \begin{document}, which
   % would replace ya-macros' \hat, \tilde, \bar, \Re, \Im, \div, \angles and
   % \Wedge (all names of Unicode symbols too). Put ours back afterwards.
