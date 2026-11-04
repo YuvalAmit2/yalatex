@@ -4,7 +4,8 @@
 \ProvidesPackage{ya-base}[2026/09/29 yalatex: packages and settings shared by every mode]
 
 % Packages: Not sure what most of these do
-\RequirePackage{amsmath,amsthm,amsfonts,amssymb,mathrsfs,dsfont,faktor,tikz,float,subcaption,quiver,enumerate,mathtools,booktabs,lipsum,xparse,graphicx,epstopdf,comment,indentfirst,bm,yhmath,thm-restate,fancyvrb,forest,makecell,longtable}
+\RequirePackage{amsmath,amsthm,dsfont,faktor,tikz,float,subcaption,quiver,enumerate,mathtools,booktabs,lipsum,xparse,graphicx,epstopdf,comment,indentfirst,thm-restate,fancyvrb,forest,makecell,longtable}
+\RequirePackage{ya-fonts} % fonts and math symbols (see ya-fonts.sty)
 
 % Fix for wrong cross-reference links on LaTeX 2024-11-01 and later
 % (TeX Live 2025+): clicking "Corollary 5.6" jumped to item 1.6.
@@ -24,7 +25,7 @@
     .\noexpand\the\noexpand\value{#1}}}
 
 \RequirePackage[dvipsnames]{xcolor}
-\RequirePackage[utf8]{inputenc}
+\ifPDFTeX\RequirePackage[utf8]{inputenc}\fi
 
 % --- Tate-Shafarevich group: Cyrillic Sha from the AMS wncyr fonts ----------
 % \sha in ya-macros.tex is typed as \text{Ш}. These lines make a typed Ш print
@@ -41,7 +42,12 @@
   <8.5-9.5> wncyb9 <9.5-> wncyb10}{}
 \DeclareMathAlphabet{\ya@mathcyr}{OT2}{wncyr}{m}{n}
 \SetMathAlphabet{\ya@mathcyr}{bold}{OT2}{wncyr}{b}{n}
-\DeclareUnicodeCharacter{0428}{\ensuremath{\ya@mathcyr{X}}}% Ш
+\ifPDFTeX
+  \DeclareUnicodeCharacter{0428}{\ensuremath{\ya@mathcyr{X}}}% Ш
+\else
+  \RequirePackage{newunicodechar}
+  \newunicodechar{Ш}{\ensuremath{\ya@mathcyr{X}}}
+\fi
 \RequirePackage[normalem]{ulem} 
 \RequirePackage[most]{tcolorbox}
 \RequirePackage[boxsize=13pt,centertableaux]{ytableau}

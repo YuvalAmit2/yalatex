@@ -1,0 +1,60 @@
+% ya-fonts.sty -- fonts for every mode
+%
+% With LuaLaTeX (or XeLaTeX): XCharter for text and math, with a real bold
+% math font, so \boldmath (and \term) makes formulas bold too. The same .otf
+% files can be used by the HTML version of the notes.
+% With pdfLaTeX: the same XCharter design from its Type 1 fonts (newtxmath for math).
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ya-fonts}[2026/11/04 yalatex: fonts for every mode]
+
+\RequirePackage{iftex}
+
+\ifPDFTeX
+  % XCharter text and math (Type 1 versions of the same fonts). newtxmath
+  % already has the AMS symbols, so amssymb isn't loaded.
+  \RequirePackage[scaled=1]{XCharter}
+  \RequirePackage[xcharter,vvarbb]{newtxmath}
+  \RequirePackage[cal=cm]{mathalfa}
+  \RequirePackage{mathrsfs}
+\else
+  \RequirePackage{fontspec}
+  % Text
+  \setmainfont{XCharter}[
+    Extension      = .otf,
+    UprightFont    = *-Roman,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic]
+  \RequirePackage{unicode-math}
+  % Math, and its bold version for \boldmath
+  \setmathfont{XCharter-Math.otf}
+  \setmathfont{XCharter-Math-Bold.otf}[version=bold]
+  % \mathcal: XCharter has only a curly script alphabet, so the calligraphic
+  % letters (the Computer Modern-like F, O, A, ...) come from KpMath, in
+  % regular and bold. \mathscr stays XCharter's script.
+  \setmathfont{KpMath-Regular.otf}[range={cal,bfcal}, StylisticSet=1, BoldFont=KpMath-Bold.otf]
+  % unicode-math (re)defines its symbol commands at \begin{document}, which
+  % would replace ya-macros' \hat, \tilde, \bar, \Re, \Im, \div, \angles and
+  % \Wedge (all names of Unicode symbols too). Put ours back afterwards.
+  \def\ya@keep{\hat\tilde\bar\Re\Im\div\angles\Wedge}
+  \AddToHook{begindocument/before}{%
+    \def\do#1{\expandafter\let\csname ya@keep@\string#1\endcsname#1}%
+    \expandafter\ya@foreach\ya@keep\relax}
+  \AddToHook{begindocument/end}{%
+    \def\do#1{\expandafter\let\expandafter#1\csname ya@keep@\string#1\endcsname}%
+    \expandafter\ya@foreach\ya@keep\relax}
+  \def\ya@foreach#1{\ifx#1\relax\else\do#1\expandafter\ya@foreach\fi}
+  % With pdfLaTeX, X_\R works because \mathbb{R} is one group; unicode-math's
+  % \mathbb isn't, so wrap the alphabets in braces to keep X_\R, \dim_\C, ...
+  \AddToHook{begindocument/end}{%
+    \def\do#1{%
+      \expandafter\let\csname ya@alph@\string#1\endcsname#1%
+      \protected\edef#1##1{{\expandafter\noexpand\csname ya@alph@\string#1\endcsname{##1}}}}%
+    \ya@foreach\mathbb\mathcal\mathscr\mathfrak\relax}
+\fi
+
+% \bm: the bm package doesn't work with unicode-math, and with newtxmath it
+% runs out of math font slots in beamer. \boldsymbol does the same job.
+\providecommand\bm{\boldsymbol}
+
+\endinput
