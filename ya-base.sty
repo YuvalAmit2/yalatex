@@ -92,6 +92,37 @@
 }
 \lstset{style=mystyle}
 
-
+% align/align*: use the short display skips exactly when TeX would for \[ \],
+% i.e. when the line before the display ends left of where the alignment starts.
+\RequirePackage{etoolbox}
+\newif\ifya@short
+\patchcmd\align@{\tabskip\eqnshift@}{\tabskip\eqnshift@
+  \ifdim\predisplaysize<\dimexpr\displayindent+\eqnshift@\relax
+    \ya@shorttrue\belowdisplayskip\belowdisplayshortskip
+  \else\ya@shortfalse\fi}{}{\PackageError{ya-base}{align patch failed}{}}
+\patchcmd\align@{\span\align@preamble\crcr}{\span\align@preamble\crcr
+  \ifya@short\noalign{\vskip-\abovedisplayskip\vskip\abovedisplayshortskip}\fi}
+  {}{\PackageError{ya-base}{align patch failed}{}}
+% align*: a line gets a number exactly when it has a \label.
+\newif\ifya@lblnum
+\def\ya@lblflag{\ifya@lblnum\global\@eqnswtrue\fi}
+\patchcmd\align@{\ifst@rred\else\global\@eqnswtrue\fi\measure@}
+  {\ifst@rred \ya@lblnumtrue\st@rredfalse\global\@eqnswfalse
+     \def\label{\ya@lblflag\label@in@display}%
+   \else \ya@lblnumfalse\global\@eqnswtrue \fi\measure@}
+  {}{\PackageError{ya-base}{align patch failed}{}}
+\patchcmd\math@cr@@@align{\ifst@rred\else\global\@eqnswtrue\fi}
+  {\ifya@lblnum\global\@eqnswfalse\else\ifst@rred\else\global\@eqnswtrue\fi\fi}
+  {}{\PackageError{ya-base}{align patch failed}{}}
+\patchcmd\math@cr@@@align@measure{\ifst@rred\else\global\@eqnswtrue\fi}
+  {\ifya@lblnum\global\@eqnswfalse\else\ifst@rred\else\global\@eqnswtrue\fi\fi}
+  {}{\PackageError{ya-base}{align patch failed}{}}
+% The measuring pass gobbles \label; let it see labeled lines too (so their
+% numbers get room). cleveref replaces \measure@ when it loads, hence the delay.
+\AtBeginDocument{%
+  \patchcmd\measure@{\let\label\cref@gobble@optarg}
+    {\def\label{\ya@lblflag\cref@gobble@optarg}}{}
+    {\patchcmd\measure@{\let\label\@gobble}{\def\label{\ya@lblflag\@gobble}}
+      {}{\PackageError{ya-base}{align patch failed}{}}}}
 
 \endinput

@@ -1,3 +1,4 @@
+// cspell:disable
 {
 	// yalatex snippets for VS Code (LaTeX files).
 	// Type the prefix and press Enter or Tab. Prefixes are all caps so they
@@ -10,13 +11,13 @@
 
 	// ----- Text and math -----
 	"Partial Derivative": {
-		"prefix": "PART",
-		"body": "\\partder[$3]{$1}{$2}$0",
+		"prefix": "PD",
+		"body": "\\partder[$3]{${1:$TM_SELECTED_TEXT}}{$2}$0",
 		"description": "\\partder[order]{function}{variable}"
 	},
 	"Matrix": {
 		"prefix": "MATR",
-		"body": "\\matr{ $0 }",
+		"body": "\\matr{ ${1:$TM_SELECTED_TEXT} }$0",
 		"description": "\\matr{ … } (pmatrix)"
 	},
 	"Italic text": {
@@ -41,102 +42,107 @@
 	},
 	"Term": {
 		"prefix": "TERM",
-		"body": "\\term[$3]{$1}$2",
+		"body": "\\term[$3]{${1:$TM_SELECTED_TEXT}}$2",
 		"description": "\\term[]{}"
+	},
+	"Display math": {
+		"prefix": "EQ",
+		"body": ["\\begin{align*}", "${1:$TM_SELECTED_TEXT}", "\\end{align*}$0"],
+		"description": "\\begin{align*}…\\end{align*}"
 	},
 
 	// ----- Theorem-like environments -----
 	"Theorem": {
 		"prefix": "THM",
-		"body": ["\\begin{thm}", "$0", "\\end{thm}"],
+		"body": ["\\begin{thm}", "${1:$TM_SELECTED_TEXT}", "\\end{thm}$0"],
 		"description": "\\begin{thm}…\\end{thm}"
 	},
 	"Proposition": {
 		"prefix": "PROP",
-		"body": ["\\begin{prop}", "$0", "\\end{prop}"],
+		"body": ["\\begin{prop}", "${1:$TM_SELECTED_TEXT}", "\\end{prop}$0"],
 		"description": "\\begin{prop}…\\end{prop}"
 	},
 	"Lemma": {
 		"prefix": "LEM",
-		"body": ["\\begin{lem}", "$0", "\\end{lem}"],
+		"body": ["\\begin{lem}", "${1:$TM_SELECTED_TEXT}", "\\end{lem}$0"],
 		"description": "\\begin{lem}…\\end{lem}"
 	},
 	"Corollary": {
 		"prefix": "COR",
-		"body": ["\\begin{cor}", "$0", "\\end{cor}"],
+		"body": ["\\begin{cor}", "${1:$TM_SELECTED_TEXT}", "\\end{cor}$0"],
 		"description": "\\begin{cor}…\\end{cor}"
 	},
 	"Conjecture": {
 		"prefix": "CONJ",
-		"body": ["\\begin{conj}", "$0", "\\end{conj}"],
+		"body": ["\\begin{conj}", "${1:$TM_SELECTED_TEXT}", "\\end{conj}$0"],
 		"description": "\\begin{conj}…\\end{conj}"
 	},
 	"Definition": {
 		"prefix": "DEFN",
-		"body": ["\\begin{defn}", "$0", "\\end{defn}"],
+		"body": ["\\begin{defn}", "${1:$TM_SELECTED_TEXT}", "\\end{defn}$0"],
 		"description": "\\begin{defn}…\\end{defn}"
 	},
 	"Example": {
-		"prefix": "EXAM",
-		"body": ["\\begin{ex}", "$0", "\\end{ex}"],
+		"prefix": "EX",
+		"body": ["\\begin{ex}", "${1:$TM_SELECTED_TEXT}", "\\end{ex}$0"],
 		"description": "\\begin{ex}…\\end{ex}"
 	},
 	"Remark": {
 		"prefix": "RMK",
-		"body": ["\\begin{rmk}", "$0", "\\end{rmk}"],
+		"body": ["\\begin{rmk}", "${1:$TM_SELECTED_TEXT}", "\\end{rmk}$0"],
 		"description": "\\begin{rmk}…\\end{rmk}"
 	},
 	"Claim": {
 		"prefix": "CLM",
-		"body": ["\\begin{claim}", "$0", "\\end{claim}"],
+		"body": ["\\begin{claim}", "${1:$TM_SELECTED_TEXT}", "\\end{claim}$0"],
 		"description": "\\begin{claim}…\\end{claim}"
 	},
 	"Question": {
 		"prefix": "QUE",
-		"body": ["\\begin{que}", "$0", "\\end{que}"],
+		"body": ["\\begin{que}", "${1:$TM_SELECTED_TEXT}", "\\end{que}$0"],
 		"description": "\\begin{que}…\\end{que}"
 	},
 	"Exercise": {
 		"prefix": "EXER",
-		"body": ["\\begin{exercise}[$1]", "$2", "\\end{exercise}"],
+		"body": ["\\begin{exercise}[$1]", "${2:$TM_SELECTED_TEXT}", "\\end{exercise}$0"],
 		"description": "\\begin{exercise}…\\end{exercise}"
 	},
 	"Note box": {
-		"prefix": "NOTEB",
-		"body": ["\\begin{notebox}", "$0", "\\end{notebox}"],
+		"prefix": "NTBX",
+		"body": ["\\begin{notebox}", "${1:$TM_SELECTED_TEXT}", "\\end{notebox}$0"],
 		"description": "\\begin{notebox}…\\end{notebox} (notes mode)"
 	},
 	"Note (unboxed)": {
-		"prefix": "NOTET",
-		"body": ["\\begin{notethm}", "$0", "\\end{notethm}"],
+		"prefix": "NTTH",
+		"body": ["\\begin{notethm}", "${1:$TM_SELECTED_TEXT}", "\\end{notethm}$0"],
 		"description": "\\begin{notethm}…\\end{notethm} (notes/homework; paper mode calls it note)"
 	},
 	"Proof": {
 		"prefix": "PRF",
-		"body": ["\\begin{proof}", "$0", "\\end{proof}"],
+		"body": ["\\begin{proof}", "${1:$TM_SELECTED_TEXT}", "\\end{proof}$0"],
 		"description": "\\begin{proof}…\\end{proof}"
 	},
 	"Solution": {
-		"prefix": "SOL",
-		"body": ["\\begin{solution}", "$0", "\\end{solution}"],
+		"prefix": "SLT",
+		"body": ["\\begin{solution}", "${1:$TM_SELECTED_TEXT}", "\\end{solution}$0"],
 		"description": "\\begin{solution}…\\end{solution}"
 	},
 	"Exeritem": {
-		"prefix": "EXIT",
-		"body": ["\\begin{exeritem}[($1)]", "$2", "\\end{exeritem}"],
+		"prefix": "EXERITEM",
+		"body": ["\\begin{exeritem}[($1)]", "${2:$TM_SELECTED_TEXT}", "\\end{exeritem}$0"],
 		"description": "\\begin{exeritem}[]…\\end{exeritem}"
 	},
 
 	// ----- Beamer -----
 	"Frame": {
-		"prefix": "FRA",
-		"body": ["\\begin{frame}{$1}", "$2", "\\end{frame}"],
+		"prefix": "FRM",
+		"body": ["\\begin{frame}{$1}", "${2:$TM_SELECTED_TEXT}", "\\end{frame}$0"],
 		"description": "\\begin{frame}{}…\\end{frame}"
 	},
 
 	"Block": {
 		"prefix": "BLO",
-		"body": ["\\begin{block}{$1}", "$2", "\\end{block}"],
-		"description": "\\begin{block}[]…\\end{block}"
+		"body": ["\\begin{block}{$1}", "${2:$TM_SELECTED_TEXT}", "\\end{block}$0"],
+		"description": "\\begin{block}{}…\\end{block}"
 	},
 }

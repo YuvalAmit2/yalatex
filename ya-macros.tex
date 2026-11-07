@@ -151,4 +151,10 @@
 \newcommand{\termnt}[1]{{\boldmath\bfseries#1}}
 
 
+% VS Code's math preview (MathJax) has no \intertext; this gives it one that puts
+% the text on its own row. In LaTeX it does nothing: amsmath already defines
+% \intertext (loaded before this file), so \providecommand is skipped.
+\providecommand{\intertext}[1]{\\ \text{#1} \\}
+
+
 \endinput
