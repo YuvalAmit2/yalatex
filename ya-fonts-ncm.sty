@@ -1,0 +1,66 @@
+% ya-fonts-ncm.sty -- New Computer Modern fonts for every mode
+%
+% A drop-in alternative to ya-fonts.sty: in ya-base.sty, change
+% \RequirePackage{ya-fonts} to \RequirePackage{ya-fonts-ncm}.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ya-fonts-ncm}[2026/11/06 yalatex: New Computer Modern fonts for every mode]
+
+\RequirePackage{iftex}
+
+\ifPDFTeX
+  % Computer Modern, LaTeX's own fonts
+  \RequirePackage{amsfonts,amssymb,mathrsfs}
+\else
+  \RequirePackage{fontspec}
+  % Text
+  % (NewCM10-Book is a slightly heavier cut, if Regular looks too thin)
+  \setmainfont{NewCM10}[
+    Extension      = .otf,
+    UprightFont    = *-Regular,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic]
+  \RequirePackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+  % Math, and its bold version for \boldmath
+  \setmathfont{NewCMMath-Regular.otf}
+  \setmathfont{NewCMMath-Bold.otf}[version=bold]
+  % The bold font has every character of the regular one. \mathcal is NCM's
+  % calligraphic alphabet; \mathscr gets its round-hand script (stylistic set 1).
+  \setmathfont{NewCMMath-Regular.otf}[range={scr,bfscr}, StylisticSet=1, BoldFont=NewCMMath-Bold.otf]
+  % \mapstochar (the bar of \mapsto, used by \xmapsto and so by \maps) is a
+  % slot in the old Computer Modern symbol font; in a Unicode math font that
+  % slot is the digit 7, so \maps came out as "7->". Draw the bar instead,
+  % sized like the bar of this font's own |-> in every style, thicker in bold.
+  \protected\def\mapstochar{\mathrel{\mathpalette\ya@mapsbar\relax}}
+  \def\ya@mapsbar#1#2{%
+    \dimen@=\Umathquad#1\relax
+    \dimen2=\ifx\math@version\ya@boldname .05\dimen@\else .04\dimen@\fi
+    \vcenter{\hbox{\kern.056\dimen@
+      \vrule width\dimen2 height.26\dimen@ depth.26\dimen@
+      \kern-\dimen2\kern-.056\dimen@}}}
+  \def\ya@boldname{bold}
+  % unicode-math (re)defines its symbol commands at \begin{document}, which
+  % would replace ya-macros' \hat, \tilde, \bar, \Re, \Im, \div, \angles and
+  % \Wedge (all names of Unicode symbols too). Put ours back afterwards.
+  \def\ya@keep{\hat\tilde\bar\Re\Im\div\angles\Wedge}
+  \AddToHook{begindocument/before}{%
+    \def\do#1{\expandafter\let\csname ya@keep@\string#1\endcsname#1}%
+    \expandafter\ya@foreach\ya@keep\relax}
+  \AddToHook{begindocument/end}{%
+    \def\do#1{\expandafter\let\expandafter#1\csname ya@keep@\string#1\endcsname}%
+    \expandafter\ya@foreach\ya@keep\relax}
+  \def\ya@foreach#1{\ifx#1\relax\else\do#1\expandafter\ya@foreach\fi}
+  % With pdfLaTeX, X_\R works because \mathbb{R} is one group; unicode-math's
+  % \mathbb isn't, so wrap the alphabets in braces to keep X_\R, \dim_\C, ...
+  \AddToHook{begindocument/end}{%
+    \def\do#1{%
+      \expandafter\let\csname ya@alph@\string#1\endcsname#1%
+      \protected\edef#1##1{{\expandafter\noexpand\csname ya@alph@\string#1\endcsname{##1}}}}%
+    \ya@foreach\mathbb\mathcal\mathscr\mathfrak\relax}
+\fi
+
+% \bm: the bm package doesn't work with unicode-math, and with newtxmath it
+% runs out of math font slots in beamer. \boldsymbol does the same job.
+\providecommand\bm{\boldsymbol}
+
+\endinput
