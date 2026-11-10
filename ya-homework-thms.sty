@@ -18,9 +18,7 @@
 \newcounter{maincounter}
 
 
-% AI-generated code (the block below):
 % Fixes a compatability issue with TeX Live 2026 and thmtools that was causing compliling errors.
-
 \@ifundefined{newcounteralias}{}{%
   \renewcommand\thmt@autorefsetup{\@xa\def\csname\thmt@envname autorefname\@xa\endcsname\@xa{\thmt@thmname}}%
 }
@@ -39,8 +37,8 @@ headpunct=.
 bodyfont=\normalfont\bfseries\boldmath
 ]{boldstyle}
 
-% AI-generated code (the block below):
 % This makes it so thmtools environments can have their options edited (namely, they can be labeled) with a second optional argument, much like my thmbox envrionments.
+% TODO: remove, replaced with \label{}
 \newcommand\addkeyarg[1]{%
   \expandafter\let\csname orig@env@#1\expandafter\endcsname\csname #1\endcsname
   \expandafter\RenewDocumentCommand\csname #1\endcsname{O{} O{}}{%
@@ -73,8 +71,8 @@ style=regular,
 numbered=no,
 #7
 ]{#1*}
-\addkeyarg{#1}  % AI addition
-\addkeyarg{#1*}  % AI addition
+\addkeyarg{#1}
+\addkeyarg{#1*}  
 }
 
 \newthmtype{thm}{Theorem}{Theorem}{Theorems}{thmcolor}{maincounter}
@@ -91,7 +89,7 @@ numbered=no,
 \newcounter{exercisecounter}[section]
 \newthmtype{exercise}{Exercise}{Exercise}{Exercises}{exercolor}{exercisecounter}[style=boldstyle]
 
-% AI-generated code: creates a thmtools environment which has a customizable name, similar to notebox.
+% Creates a thmtools environment which has a customizable name, similar to notebox.
 \newcommand\notethmname{Note}
 \declaretheorem[name=\color{notecolor}\protect\notethmname,
 sibling=maincounter,
@@ -114,7 +112,7 @@ numbered=no
  \ifblank{#2}{\csname notethminner*\endcsname}{\csname notethminner*\endcsname[#2]}}
 {\csname endnotethminner*\endcsname}
 
-% Similar to proof but with the word solution
+% Similar to proof but with the word Solution
 \newenvironment{solution}{\textit{Solution.}}{\hfill $\square$}
 
 \endinput

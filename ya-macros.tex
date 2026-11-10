@@ -3,7 +3,7 @@
 % Load for Math Preview in LaTeX workshop with:
 %   "latex-workshop.hover.preview.newcommand.newcommandFile": "/Users/<you>/LaTeX/yalatex/ya-macros.tex"
 
-% Common Shorthand Commands
+% Common math symbols
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\C}{\mathbb{C}}
 \newcommand{\Z}{\mathbb{Z}}
@@ -26,6 +26,7 @@
 \newcommand{\cD}{\mathcal{D}}
 \newcommand{\cA}{\mathcal{A}}
 
+% Shorter/better versions of commands
 \newcommand{\mb}{\mathbb}
 \newcommand{\mc}{\mathcal}
 \newcommand{\mf}{\mathfrak}
@@ -42,17 +43,25 @@
 \newcommand{\sm}{\smallsetminus}
 \newcommand{\dirlim}{\varinjlim}
 \newcommand{\invlim}{\varprojlim}
+\newcommand{\fr}{\frac}
+
+\let\dotunder\d  
+\renewcommand{\d}{\,d}
 
 % Commands With Inputs
 \newcommand{\matr}[1]{\begin{pmatrix}#1\end{pmatrix}}
 \newcommand{\case}[1]{\begin{cases}#1\end{cases}}
 \newcommand{\leg}[2]{\left ( \frac{#1}{#2} \right )}
 \newcommand{\partder}[3][]{\frac{\partial^{#1}#2}{\partial #3^{#1}}}
+\renewcommand{\mod}[1]{\ \ \mathrm{mod}\ #1}
+\renewcommand{\pmod}[1]{\ \paren{\mathrm{mod} \: #1}}
+
 % Arrows
 \newcommand{\arr}[1][]{\xrightarrow{#1}}
 \newcommand{\inj}[1][]{\xhookrightarrow{#1}}
 \newcommand{\surj}[1][]{\xrightarrow{#1}\mathrel{\mkern-14mu}\rightarrow}
 \newcommand{\maps}[1][]{\xmapsto{#1}}
+
 % Brackets
 \newcommand\angles[1]{\left \langle #1 \right \rangle}
 \newcommand\aangles[1]{\angles{\!\angles{#1}\!}}
@@ -63,8 +72,7 @@
 \newcommand\norm[1]{\left\lVert #1 \right\rVert}
 \newcommand\braks[1]{\left [ #1 \right ] }
 \newcommand\setbar{\: \middle |\: }
-\renewcommand{\mod}[1]{\ \ \mathrm{mod}\ #1}
-\renewcommand{\pmod}[1]{\ \paren{\mathrm{mod} \: #1}}
+
 
 % Common Math Words
 \newcommand{\Gal}{\operatorname{Gal}}
@@ -138,6 +146,7 @@
 \newcommand{\diam}{\operatorname{diam}}
 \newcommand{\LC}{\operatorname{LC}}
 \newcommand{\Exp}{\operatorname{Exp}}
+\newcommand{\dlog}{\operatorname{dlog}}
 
 % Text in math
 \newcommand{\w}[1]{\operatorname{#1}}
