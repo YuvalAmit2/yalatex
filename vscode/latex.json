@@ -50,6 +50,11 @@
 		"body": ["\\begin{align*}", "${1:$TM_SELECTED_TEXT}", "\\end{align*}$0"],
 		"description": "\\begin{align*}…\\end{align*}"
 	},
+	"Frac": {
+		"prefix": "FRAC",
+		"body": ["\\frac{${1:$TM_SELECTED_TEXT}}{$2}$0"],
+		"description": "\\frac{}{}"
+	},
 
 	// ----- Theorem-like environments -----
 	"Theorem": {
