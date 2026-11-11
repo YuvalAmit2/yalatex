@@ -6,6 +6,8 @@
 %   \usepackage[paper]{yalatex}    papers (use with amsart)
 %   \usepackage[beamer]{yalatex}   presentations (use with beamer)
 %
+% Add the option bib for a bibliography (biblatex), e.g. \usepackage[notes,bib]{yalatex}.
+%
 % With no option, the mode follows the document class:
 %   beamer -> beamer,  amsart -> paper,  anything else -> notes.
 % (Homework mode is only used when asked for.)
@@ -30,6 +32,10 @@
 \DeclareOption{paper}{\let\ya@mode\ya@paper}
 \DeclareOption{beamer}{\let\ya@mode\ya@beamer}
 \DeclareOption{homework}{\let\ya@mode\ya@homework}
+% bib: load biblatex (biber, alphabetic labels). Off by default, since loading
+% biblatex adds about half a second to a second to every compile.
+\newif\ifya@bib
+\DeclareOption{bib}{\ya@bibtrue}
 \DeclareOption*{\PackageWarning{yalatex}{Unknown option `\CurrentOption' ignored}}
 \ProcessOptions\relax
 

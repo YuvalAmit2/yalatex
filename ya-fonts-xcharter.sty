@@ -1,11 +1,11 @@
-% ya-fonts.sty -- fonts for every mode
+% ya-fonts-xcharter.sty -- XCharter fonts for every mode
 %
 % With LuaLaTeX (or XeLaTeX): XCharter for text and math, with a real bold
 % math font, so \boldmath (and \term) makes formulas bold too. The same .otf
 % files can be used by the HTML version of the notes.
 % With pdfLaTeX: the same XCharter design from its Type 1 fonts (newtxmath for math).
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{ya-fonts}[2026/11/04 yalatex: fonts for every mode]
+\ProvidesPackage{ya-fonts-xcharter}[2026/11/11 yalatex: XCharter fonts for every mode]
 
 \RequirePackage{iftex}
 
@@ -25,11 +25,12 @@
     BoldFont       = *-Bold,
     ItalicFont     = *-Italic,
     BoldItalicFont = *-BoldItalic]
-  \RequirePackage{unicode-math}
+  \RequirePackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
   % Math, and its bold version for \boldmath
   \setmathfont{XCharter-Math.otf}
   \setmathfont{XCharter-Math-Bold.otf}[version=bold]
-  \setmathfont{XCharter-Math.otf}[range=bb]
+  % \mathbb stays regular weight in bold formulas (\term, \bm, \boldmath)
+  \setmathfont{XCharter-Math.otf}[range=bb, BoldFont=XCharter-Math.otf]
   % \mathcal: XCharter has only a curly script alphabet, so the calligraphic
   % letters (the Computer Modern-like F, O, A, ...) come from KpMath, in
   % regular and bold. \mathscr stays XCharter's script.

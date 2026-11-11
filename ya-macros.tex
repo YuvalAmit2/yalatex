@@ -45,8 +45,10 @@
 \newcommand{\invlim}{\varprojlim}
 \newcommand{\fr}{\frac}
 
+% Weird ones
 \let\dotunder\d  
 \renewcommand{\d}{\,d}
+\mathchardef\dash="2D
 
 % Commands With Inputs
 \newcommand{\matr}[1]{\begin{pmatrix}#1\end{pmatrix}}
@@ -109,6 +111,9 @@
 \newcommand{\End}{\operatorname{End}}
 \newcommand{\Spec}{\operatorname{Spec}}
 \newcommand{\Specm}{\operatorname{Specm}}
+\newcommand{\specm}{\operatorname{specm}}
+\newcommand{\Spm}{\operatorname{Spm}}
+\newcommand{\spm}{\operatorname{spm}}
 \newcommand{\Int}{\operatorname{Int}}
 \newcommand{\supp}{\operatorname{supp}}
 \newcommand{\rad}{\operatorname{rad}}
@@ -134,9 +139,6 @@
 \newcommand{\Var}{\operatorname{Var}}
 \newcommand{\Ob}{\operatorname{Ob}}
 \newcommand{\op}{\operatorname{op}}
-\newcommand{\Sets}{\operatorname{\textbf{Sets}}}
-\newcommand{\Grp}{\operatorname{\textbf{Grp}}}
-\newcommand{\Mod}{\operatorname{-\textbf{mod}}}
 \newcommand{\ab}{\operatorname{ab}}
 \newcommand{\codim}{\operatorname{codim}}
 \newcommand{\Der}{\operatorname{Der}}
@@ -147,6 +149,15 @@
 \newcommand{\LC}{\operatorname{LC}}
 \newcommand{\Exp}{\operatorname{Exp}}
 \newcommand{\dlog}{\operatorname{dlog}}
+\newcommand{\Mor}{\operatorname{Mor}}
+
+% Categories
+\newcommand{\Sets}{\operatorname{\textbf{Sets}}}
+\newcommand{\Grp}{\operatorname{\textbf{Grp}}}
+\newcommand{\Mod}{\operatorname{\textbf{mod}}}
+\newcommand{\dMod}{\operatorname{-\textbf{mod}}}
+\newcommand{\alg}{\operatorname{\textbf{alg}}}
+\newcommand{\dalg}{\!\operatorname{\textbf{-alg}}}
 
 % Text in math
 \newcommand{\w}[1]{\operatorname{#1}}

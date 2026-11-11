@@ -286,7 +286,7 @@ Load yalatex right after `\documentclass`, with one mode:
 | `\usepackage[paper]{yalatex}` | `amsart` | plain theorems in the usual journal style |
 | `\usepackage[beamer]{yalatex}` | `beamer` | Madrid theme with serif fonts; beamer's own `theorem`, `definition`, ... |
 
-With no option, the mode follows the class: `beamer` → beamer, `amsart` → paper, anything else → notes. All modes share the [macros](#macros), clickable references, Palatino fonts, TikZ, tikz-cd, ytableau, tcolorbox, biblatex and listings.
+With no option, the mode follows the class: `beamer` → beamer, `amsart` → paper, anything else → notes. All modes share the [macros](#macros), clickable references, Palatino fonts, TikZ, tikz-cd, ytableau, tcolorbox and listings. Add the option `bib` for a [bibliography](#bibliography).
 
 ## The yalatex command
 
@@ -381,6 +381,7 @@ For commutative diagrams use `tikzcd` (you can draw them at [q.uiver.app](https:
 ## Bibliography
 
 ```latex
+\usepackage[notes,bib]{yalatex}   % add bib to the options
 \addbibresource{references.bib}   % in the preamble (commented out in the starters)
 ...
 \cite{hartshorne}
@@ -388,7 +389,7 @@ For commutative diagrams use `tikzcd` (you can draw them at [q.uiver.app](https:
 \printbibliography
 ```
 
-This uses biblatex with biber and alphabetic labels like [Har77]. latexmk and LaTeX Workshop run biber automatically.
+This uses biblatex with biber and alphabetic labels like [Har77]. latexmk and LaTeX Workshop run biber automatically. Without `bib`, biblatex isn't loaded, which saves about half a second to a second per compile.
 
 ## Macros
 

@@ -5,7 +5,7 @@
 
 % Packages: Not sure what most of these do
 \RequirePackage{amsmath,amsthm,dsfont,faktor,tikz,float,subcaption,quiver,enumerate,mathtools,booktabs,lipsum,xparse,graphicx,epstopdf,comment,indentfirst,thm-restate,fancyvrb,forest,makecell,longtable}
-\RequirePackage{ya-fonts-xcharter} % fonts and math symbols (see ya-fonts.sty)
+\RequirePackage{ya-fonts-xcharter} % fonts and math symbols (see ya-fonts-xcharter.sty)
 
 % Fix for wrong cross-reference links on LaTeX 2024-11-01 and later
 % (TeX Live 2025+): clicking "Corollary 5.6" jumped to item 1.6.
@@ -51,11 +51,14 @@
 \RequirePackage[normalem]{ulem} 
 \RequirePackage[most]{tcolorbox}
 \RequirePackage[boxsize=13pt,centertableaux]{ytableau}
-\RequirePackage[
-  backend=biber,
-  style=alphabetic,
-  sorting=nyt
-]{biblatex}
+% Bibliography: only with \usepackage[...,bib]{yalatex} (see yalatex.sty)
+\ifya@bib
+  \RequirePackage[
+    backend=biber,
+    style=alphabetic,
+    sorting=nyt
+  ]{biblatex}
+\fi
 % \setlist{itemsep=2pt}
 
 % Something something TikZ
