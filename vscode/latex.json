@@ -32,12 +32,12 @@
 	},
 	"Implies": {
 		"prefix": "IMP",
-		"body": "($\\implies$)",
+		"body": "($\\implies$) $0",
 		"description": "($\\implies$)"
 	},
 	"Implied by": {
 		"prefix": "IMB",
-		"body": "($\\impliedby$)",
+		"body": "($\\impliedby$) $0",
 		"description": "($\\impliedby$)"
 	},
 	"Term": {
@@ -54,6 +54,16 @@
 		"prefix": "FRAC",
 		"body": ["\\frac{${1:$TM_SELECTED_TEXT}}{$2}$0"],
 		"description": "\\frac{}{}"
+	},
+	"Parenthesis": {
+		"prefix": "PAREN",
+		"body": ["\\paren{${1:$TM_SELECTED_TEXT}}$0"],
+		"description": "\\paren{}"
+	},
+	"Curly brackets": {
+		"prefix": "BRAX",
+		"body": ["\\brax{${1:$TM_SELECTED_TEXT}}$0"],
+		"description": "\\brax{}"
 	},
 
 	// ----- Theorem-like environments -----
