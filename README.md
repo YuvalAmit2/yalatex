@@ -107,7 +107,7 @@ The same steps by hand:
 ```bash
 # 1. Link yalatex into your personal TeX folder
 mkdir -p "$(kpsewhich -var-value TEXMFHOME)/tex/latex"
-ln -s ~/LaTeX/yalatex "$(kpsewhich -var-value TEXMFHOME)/tex/latex/yalatex"
+ln -sfn ~/LaTeX/yalatex "$(kpsewhich -var-value TEXMFHOME)/tex/latex/yalatex"
 kpsewhich yalatex.sty        # should print a path inside that folder
 
 # 2. The yalatex command and your name
