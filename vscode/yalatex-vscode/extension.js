@@ -1,5 +1,5 @@
 // yalatex VS Code extension: makes $ in LaTeX files behave like {, and
-// Ctrl+F opens a TikZ Editor figure for the current line (see the end).
+// Ctrl+Cmd+F opens a TikZ Editor figure for the current line (see the end).
 //
 // LaTeX Workshop lists the pairs VS Code closes automatically ({ }, [ ], ( ),
 // \left( ... ) in its language configuration, but not $ $. This adds two
@@ -89,10 +89,10 @@ function insideMath(textBefore) {
 }
 
 // ----- TikZ Editor figures -----
-// Ctrl+F on a line: the line's text names a figure. The line becomes
+// Ctrl+Cmd+F on a line: the line's text names a figure. The line becomes
 // \tikzfig{name} and TikZ Editor opens graphics/name.tikz (next to the .tex
 // file; a new figure if it doesn't exist yet). On a line that already has
-// \tikzfig{name}, Ctrl+F opens that figure again. In TikZ Editor, Cmd+Enter
+// \tikzfig{name}, Ctrl+Cmd+F opens that figure again. In TikZ Editor, Cmd+Enter
 // saves and comes back here.
 
 function figureSlug(text) {

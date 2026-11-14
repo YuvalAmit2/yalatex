@@ -1,8 +1,8 @@
 {
   "name": "yalatex-vscode",
   "displayName": "yalatex",
-  "description": "Makes $ in LaTeX files pair up like { does, and Ctrl+F draws a TikZ Editor figure for the current line.",
-  "version": "0.2.0",
+  "description": "Makes $ in LaTeX files pair up like { does, and Ctrl+Cmd+F draws a TikZ Editor figure for the current line.",
+  "version": "0.2.1",
   "publisher": "yalatex",
   "license": "MIT",
   "repository": {
@@ -33,7 +33,7 @@
     "keybindings": [
       {
         "command": "yalatex.tikzFigure",
-        "key": "ctrl+f",
+        "key": "ctrl+cmd+f",
         "when": "editorTextFocus && editorLangId == latex"
       }
     ],
