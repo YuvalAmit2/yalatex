@@ -1,14 +1,51 @@
 {
   "name": "yalatex-vscode",
   "displayName": "yalatex",
-  "description": "Makes $ in LaTeX files pair up like { does: $ gives $|$, Backspace deletes both, \\$ is left alone.",
-  "version": "0.1.1",
+  "description": "Makes $ in LaTeX files pair up like { does, and Ctrl+F draws a TikZ Editor figure for the current line.",
+  "version": "0.2.0",
   "publisher": "yalatex",
   "license": "MIT",
-  "repository": { "type": "git", "url": "https://github.com/YuvalAmit2/yalatex" },
-  "engines": { "vscode": "^1.85.0" },
-  "categories": ["Other"],
-  "extensionDependencies": ["James-Yu.latex-workshop"],
-  "activationEvents": ["onLanguage:latex"],
-  "main": "./extension.js"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YuvalAmit2/yalatex"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "extensionDependencies": [
+    "James-Yu.latex-workshop"
+  ],
+  "activationEvents": [
+    "onLanguage:latex",
+    "onCommand:yalatex.tikzFigure"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "yalatex.tikzFigure",
+        "title": "yalatex: TikZ figure for this line"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "yalatex.tikzFigure",
+        "key": "ctrl+f",
+        "when": "editorTextFocus && editorLangId == latex"
+      }
+    ],
+    "configuration": {
+      "title": "yalatex",
+      "properties": {
+        "yalatex.tikzEditor": {
+          "type": "string",
+          "default": "~/latex/tikz-editor/bin/tikz-editor",
+          "description": "The tikz-editor launcher (bin/tikz-editor in the TikZ Editor folder)."
+        }
+      }
+    }
+  }
 }

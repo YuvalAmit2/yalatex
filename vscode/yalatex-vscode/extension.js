@@ -1,4 +1,5 @@
-// yalatex VS Code extension: makes $ in LaTeX files behave like {.
+// yalatex VS Code extension: makes $ in LaTeX files behave like {, and
+// Ctrl+F opens a TikZ Editor figure for the current line (see the end).
 //
 // LaTeX Workshop lists the pairs VS Code closes automatically ({ }, [ ], ( ),
 // \left( ... ) in its language configuration, but not $ $. This adds two
@@ -19,6 +20,8 @@
 const vscode = require('vscode');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
+const cp = require('child_process');
 
 const LANGUAGE = 'latex';
 const LATEX_WORKSHOP = 'James-Yu.latex-workshop';
@@ -85,7 +88,69 @@ function insideMath(textBefore) {
   return count % 2 === 1;
 }
 
+// ----- TikZ Editor figures -----
+// Ctrl+F on a line: the line's text names a figure. The line becomes
+// \tikzfig{name} and TikZ Editor opens graphics/name.tikz (next to the .tex
+// file; a new figure if it doesn't exist yet). On a line that already has
+// \tikzfig{name}, Ctrl+F opens that figure again. In TikZ Editor, Cmd+Enter
+// saves and comes back here.
+
+function figureSlug(text) {
+  return text.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+function expandHome(p) {
+  return p.startsWith('~/') ? path.join(os.homedir(), p.slice(2)) : p;
+}
+
+let checkedSty = false;
+function checkTikzfigSty() {
+  if (checkedSty) return;
+  checkedSty = true;
+  cp.execFile('kpsewhich', ['tikzfig.sty'], (err, out) => {
+    if (err && err.code === 'ENOENT') return; // no TeX on this PATH: can't tell
+    if (!String(out).trim()) {
+      vscode.window.showWarningMessage("yalatex: LaTeX can't find tikzfig.sty yet, so \\tikzfig won't work. In the tikz-editor folder, run: npm run install-sty");
+    }
+  });
+}
+
+async function tikzFigure() {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) return;
+  const doc = editor.document;
+  if (doc.isUntitled) {
+    vscode.window.showErrorMessage('yalatex: save the .tex file first, so the figure has a folder to go in.');
+    return;
+  }
+  const line = doc.lineAt(editor.selection.active.line);
+  const existing = line.text.match(/\\tikzfig(?:\[[^\]]*\])?\{([^}]+)\}/);
+  let name;
+  if (existing) {
+    name = existing[1].trim();
+  } else {
+    let text = line.text.trim();
+    if (!text) text = (await vscode.window.showInputBox({ prompt: 'Figure name', placeHolder: 'e.g. torus' })) || '';
+    name = figureSlug(text);
+    if (!name) return;
+    const indent = line.text.match(/^\s*/)[0];
+    await editor.edit(b => b.replace(line.range, `${indent}\\tikzfig{${name}}`));
+  }
+  const file = path.join(path.dirname(doc.uri.fsPath), 'graphics', name + '.tikz');
+  const cmd = expandHome(vscode.workspace.getConfiguration('yalatex').get('tikzEditor') || '~/latex/tikz-editor/bin/tikz-editor');
+  if (!fs.existsSync(cmd)) {
+    vscode.window.showErrorMessage(`yalatex: TikZ Editor isn't at ${cmd}. Set "yalatex.tikzEditor" to its bin/tikz-editor.`);
+    return;
+  }
+  const child = cp.spawn(cmd, [file], { cwd: path.dirname(doc.uri.fsPath), detached: true, stdio: 'ignore' });
+  child.on('error', err => vscode.window.showErrorMessage(`yalatex: couldn't start TikZ Editor (${err.message}).`));
+  child.unref();
+  checkTikzfigSty();
+}
+
 function activate(context) {
+  context.subscriptions.push(vscode.commands.registerCommand('yalatex.tikzFigure', tikzFigure));
+
   const lw = vscode.extensions.getExtension(LATEX_WORKSHOP);
   if (!lw) {
     vscode.window.showWarningMessage('yalatex: the $ pairing needs the LaTeX Workshop extension, which is not installed.');
@@ -125,4 +190,4 @@ function activate(context) {
 
 function deactivate() {}
 
-module.exports = { activate, deactivate, _test: { parseJsonc, latexWorkshopPairs, combinedPairs, insideMath } };
+module.exports = { activate, deactivate, _test: { parseJsonc, latexWorkshopPairs, combinedPairs, insideMath, figureSlug } };

@@ -75,6 +75,10 @@
     {\import{./graphics/#2/}{#2.pdf_tex}}%
     {\import{./graphics/}{#2.pdf_tex}}}
 
+% TikZ Editor figures: \tikzfig{name}, \tikzfig[width]{name} (graphics/name.tikz).
+% tikzfig.sty comes with TikZ Editor; it is loaded only if it is installed.
+\IfFileExists{tikzfig.sty}{\RequirePackage{tikzfig}}{}
+
 % Code
 \RequirePackage{listings}
 \definecolor{codegreen}{rgb}{0,0.6,0}
