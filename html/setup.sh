@@ -14,6 +14,7 @@ cp "$here/package.json" "$here/package-lock.json" "$cache/"
 if [ ! -x "$cache/.venv/bin/pyftsubset" ]; then
   rm -rf "$cache/.venv"
   python3 -m venv "$cache/.venv"
-  "$cache/.venv/bin/pip" install --quiet fonttools==4.60.1 brotli==1.1.0
+  # ready-made packages only (no compiler needed); brotli 1.2.1 has them for Python 3.14 and 3.15
+  "$cache/.venv/bin/pip" install --quiet --only-binary :all: fonttools==4.60.1 brotli==1.2.1
 fi
 echo "set up in $cache"
