@@ -17,8 +17,13 @@
 	},
 	"Matrix": {
 		"prefix": "MATR",
-		"body": "\\matr{ ${1:$TM_SELECTED_TEXT} }$0",
-		"description": "\\matr{ … } (pmatrix)"
+		"body": ["\\begin{pmatrix}", "${1:$TM_SELECTED_TEXT}", "\\end{pmatrix}$0"],
+		"description": "\\begin{pmatrix}...\\end{pmatrix}"
+	},
+	"Cases": {
+		"prefix": "CASE",
+		"body": ["\\begin{cases}", "${1:$TM_SELECTED_TEXT}", "\\end{cases}$0"],
+		"description": "\\begin{cases}...\\end{cases}"
 	},
 	"Italic text": {
 		"prefix": "TIT",

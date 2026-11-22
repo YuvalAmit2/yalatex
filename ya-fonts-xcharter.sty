@@ -29,8 +29,17 @@
   % Math, and its bold version for \boldmath
   \setmathfont{XCharter-Math.otf}
   \setmathfont{XCharter-Math-Bold.otf}[version=bold]
-  % \mathbb stays regular weight in bold formulas (\term, \bm, \boldmath)
-  \setmathfont{XCharter-Math.otf}[range=bb, BoldFont=XCharter-Math.otf]
+  % XCharter has no bold double-struck alphabet, so in bold formulas (\term,
+  % \bm, \boldmath) \mathbb is the regular one, emboldened synthetically by
+  % LuaTeX (embolden=3; raise it for heavier, lower it for lighter).
+  \setmathfont{XCharter-Math.otf}[range=bb, BoldFont=XCharter-Math.otf,
+    BoldFeatures={RawFeature={embolden=6}}]
+  % XCharter-Math-Bold has no size variants (it can't grow big delimiters or
+  % big operators: \left( stays small, \bigg( too). In bold formulas take the
+  % delimiters and big operators from the regular font, emboldened like \mathbb.
+  \setmathfont{XCharter-Math.otf}[
+    range={"0028-"0029,"005B,"005D,"007B,"007D,"007C,"2016,"27E8-"27E9,"2308-"230B,"2211,"220F,"2210,"222B-"2233,"22C0-"22C3,"2A00-"2A02},
+    BoldFont=XCharter-Math.otf, BoldFeatures={RawFeature={embolden=2}}]
   % \mathcal: XCharter has only a curly script alphabet, so the calligraphic
   % letters (the Computer Modern-like F, O, A, ...) come from KpMath, in
   % regular and bold. \mathscr stays XCharter's script.

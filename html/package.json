@@ -1,0 +1,17 @@
+{
+  "name": "yalatex-html",
+  "private": true,
+  "type": "module",
+  "description": "HTML version of the notes: tex4ht + MathJax 4 (prototype)",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "@mathjax/mathjax-newcm-font": "4.1.3",
+    "@mathjax/src": "4.1.3",
+    "jsdom": "30.1.3"
+  },
+  "devDependencies": {
+    "playwright-core": "1.64.1"
+  }
+}
