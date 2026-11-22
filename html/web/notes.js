@@ -29,6 +29,7 @@
     { key: 'proofs', label: 'Proofs', sel: 'details.ya-proof-fold' },
     { key: 'boxes', label: 'Boxes', sel: '.ya-box' },
     { key: 'extras', label: 'Extras', sel: '.ya-plain' },                // examples, remarks, exercises, ...
+    { key: 'chapters', label: 'Chapters', sel: 'section.ya-sec-1' },
     { key: 'sections', label: 'Sections', sel: 'section.ya-sec-2, section.ya-sec-3' }
   ];
 
@@ -183,7 +184,7 @@
       '<a class="ya-btn ya-icon-only" href="' + esc(data.home || '../') + '" title="All notes" aria-label="All notes">' + ICON.back + '</a>' +
       '<span class="ya-course"></span><span class="ya-spacer"></span>' +
       '<div class="ya-search" role="search">' +
-        '<input id="ya-find" type="search" placeholder="Find (text or TeX)  ' + findKey + '" aria-label="Find in these notes" autocomplete="off" spellcheck="false">' +
+        '<input id="ya-find" type="search" placeholder="Find  ' + findKey + '" aria-label="Find in these notes" autocomplete="off" spellcheck="false">' +
         '<span class="ya-count" aria-live="polite"></span>' +
         '<button class="ya-btn ya-icon-only ya-sbtn" id="ya-prev" type="button" title="Previous match (Shift+Enter)" aria-label="Previous match">' + ICON.up + '</button>' +
         '<button class="ya-btn ya-icon-only ya-sbtn" id="ya-next" type="button" title="Next match (Enter)" aria-label="Next match">' + ICON.down + '</button>' +
@@ -327,6 +328,7 @@
     if (wide.addEventListener) wide.addEventListener('change', sync);
     sync();
     nav.addEventListener('click', function (e) { if (e.target.closest('a') && !wide.matches) { D.body.classList.remove('ya-toc-open'); sync(); } });
+    setupTocResize(nav, wide, sync);
     D.addEventListener('click', function (e) {
       if (D.body.classList.contains('ya-toc-open') && !e.target.closest('.ya-toc, #ya-toc-btn')) { D.body.classList.remove('ya-toc-open'); sync(); }
     });
@@ -353,6 +355,51 @@
     }
     window.addEventListener('scroll', function () { if (!pending) { pending = true; requestAnimationFrame(update); } }, { passive: true });
     update();
+  }
+
+  // Drag the sidebar's right edge to widen or narrow it (the width is
+  // remembered); dragging it far enough left closes it, as the menu button does.
+  var TOC_MIN = 180, TOC_CLOSE = 110;
+  function setupTocResize(nav, wide, sync) {
+    var root = D.documentElement;
+    var saved = parseFloat(store.get('tocw'));
+    if (saved >= TOC_MIN) root.style.setProperty('--toc-w', saved + 'px');
+    var grip = el('div', { 'class': 'ya-toc-grip ya-ui', role: 'separator', 'aria-orientation': 'vertical',
+      'aria-label': 'Resize the contents', title: 'Drag to resize; drag to the left to close' });
+    D.body.appendChild(grip);
+    var dragging = false, closing = false;
+    function maxW() { return Math.min(600, window.innerWidth * 0.5); }
+    grip.addEventListener('pointerdown', function (e) {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      dragging = true; closing = false;
+      grip.setPointerCapture(e.pointerId);
+      D.body.classList.add('ya-toc-resizing');
+    });
+    grip.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      var x = e.clientX;
+      closing = x < TOC_CLOSE;
+      D.body.classList.toggle('ya-toc-closing', closing);
+      root.style.setProperty('--toc-w', Math.round(Math.min(maxW(), Math.max(TOC_MIN, x))) + 'px');
+    });
+    function end() {
+      if (!dragging) return;
+      dragging = false;
+      D.body.classList.remove('ya-toc-resizing', 'ya-toc-closing');
+      if (closing) {
+        // closed: reopening brings back the last width before the drag
+        var w = parseFloat(store.get('tocw'));
+        if (w >= TOC_MIN) root.style.setProperty('--toc-w', w + 'px'); else root.style.removeProperty('--toc-w');
+        if (wide.matches) { D.body.classList.add('ya-toc-hidden'); store.set('toc', 'hidden'); }
+        else D.body.classList.remove('ya-toc-open');
+        sync();
+      } else store.set('tocw', String(parseFloat(getComputedStyle(root).getPropertyValue('--toc-w'))));
+    }
+    grip.addEventListener('pointerup', end);
+    grip.addEventListener('pointercancel', end);
+    // double-click: back to the standard width
+    grip.addEventListener('dblclick', function () { root.style.removeProperty('--toc-w'); store.set('tocw', null); });
   }
 
   // ---------------------------------------------------------------- going to a target
