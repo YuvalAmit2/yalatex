@@ -903,4 +903,6 @@ console.log(`wrote ${out}/index.html (${(size / 1e6).toFixed(1)} MB)`);
 if (problems.length) {
   console.log(`\n${problems.length} problem(s):`);
   for (const p of problems) console.log('  ' + p);
+  // on GitHub, also as warnings on the run's page
+  if (process.env.GITHUB_ACTIONS) for (const p of problems) console.log(`::warning::${course}: ${p.replace(/\s+/g, ' ')}`);
 }
