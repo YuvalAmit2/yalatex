@@ -939,12 +939,11 @@ function writeOut(doc, title, css, pics, termForms) {
 <script src="${v('notes.js')}" defer></script>
 `;
   head.querySelector('title').textContent = title;
-  // a loading bar, until notes.js has set the page up (a long page takes a few seconds)
+  // "Loading…", until notes.js has set the page up (a long page takes a few seconds)
   const loading = doc.createElement('div');
   loading.className = 'ya-loading';
-  loading.setAttribute('role', 'progressbar');
-  loading.setAttribute('aria-label', 'Loading');
-  loading.innerHTML = '<span>Loading…</span>';
+  loading.setAttribute('role', 'status');
+  loading.textContent = 'Loading…';
   doc.body.prepend(loading);
   const data = doc.createElement('script');
   data.type = 'application/json';

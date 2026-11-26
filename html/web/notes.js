@@ -190,9 +190,9 @@
         '<button class="ya-btn ya-icon-only ya-sbtn" id="ya-next" type="button" title="Next match (Enter)" aria-label="Next match">' + ICON.down + '</button>' +
       '</div>' +
       '<div class="ya-menu-wrap">' +
-        '<button id="ya-show-btn" class="ya-btn" type="button" aria-haspopup="true" aria-expanded="false" title="Fold away all chapters, sections, boxes, statements or proofs">' +
-          ICON.hide + '<span class="ya-label">Hide</span></button>' +
-        '<div class="ya-menu" role="menu" aria-label="Hide" hidden></div>' +
+        '<button id="ya-show-btn" class="ya-btn" type="button" aria-haspopup="true" aria-expanded="false" title="Fold or unfold all chapters, sections, boxes, statements or proofs">' +
+          ICON.hide + '<span class="ya-label">Show</span></button>' +
+        '<div class="ya-menu" role="menu" aria-label="Show" hidden></div>' +
       '</div>' +
       (data.pdf ? '<a class="ya-btn" href="' + esc(data.pdf) + '" title="PDF version">' + ICON.pdf + '<span class="ya-label">PDF</span></a>' : '') +
       '<button id="ya-theme-btn" class="ya-btn ya-icon-only" type="button">' + ICON.theme + '</button>';
@@ -222,7 +222,7 @@
   }
 
   // ---------------------------------------------------------------- Show menu
-  // One checkbox per group: checked = all folded, empty = all unfolded, a dash
+  // One checkbox per group: checked = all unfolded, empty = all folded, a dash
   // = some of each. Which groups are folded is remembered.
   var menuReady = false;
   function setupShowMenu() {
@@ -242,7 +242,7 @@
     items.forEach(function (it, i) {
       it.addEventListener('click', function () {
         var g = GROUPS.filter(function (x) { return x.key === it.dataset.key; })[0];
-        foldGroup(g, it.getAttribute('aria-checked') !== 'true');
+        foldGroup(g, it.getAttribute('aria-checked') === 'true');
       });
       it.addEventListener('keydown', function (e) {
         if (e.key === 'ArrowDown') { e.preventDefault(); items[(i + 1) % items.length].focus(); }
@@ -279,7 +279,7 @@
       var g = GROUPS.filter(function (x) { return x.key === it.dataset.key; })[0];
       var nodes = article.querySelectorAll(g.sel), folded = 0;
       nodes.forEach(function (n) { if (isFolded(n)) folded++; });
-      it.setAttribute('aria-checked', folded === 0 ? 'false' : folded === nodes.length ? 'true' : 'mixed');
+      it.setAttribute('aria-checked', folded === 0 ? 'true' : folded === nodes.length ? 'false' : 'mixed');
     });
   }
 
