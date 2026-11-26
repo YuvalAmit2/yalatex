@@ -128,6 +128,38 @@ function cleanUp(doc) {
   }
 }
 
+// tex4ht puts footnotes on pages of their own: bring them back, as a list at
+// the end, so that a footnote mark links (and previews) its text.
+function footnotes(doc, htmlDir) {
+  const pages = new Map();
+  const list = doc.createElement('section');
+  list.className = 'ya-footnotes';
+  for (const a of doc.querySelectorAll('.footnote-mark a[href*="#"]')) {
+    const [file, id] = a.getAttribute('href').split('#');
+    if (!file) continue;
+    if (!pages.has(file)) {
+      const f = path.join(htmlDir, file);
+      pages.set(file, fs.existsSync(f) ? new JSDOM(fs.readFileSync(f, 'utf8')).window.document : null);
+    }
+    const text = pages.get(file)?.getElementById(id)?.closest('aside');
+    if (!text) { problem(`footnote text not found: ${a.getAttribute('href')}`); continue; }
+    const note = doc.importNode(text, true);
+    note.className = 'ya-footnote';
+    note.id = id;
+    note.querySelectorAll('[id]').forEach(n => { if (n.id !== id) n.removeAttribute('id'); });
+    note.querySelector('#' + CSS_escape(id))?.removeAttribute('id');
+    a.setAttribute('href', '#' + id);
+    a.closest('.footnote-mark').id ||= 'fnref-' + id;
+    list.append(note);
+  }
+  if (!list.children.length) return;
+  const h = doc.createElement('h2');
+  h.className = 'ya-footnotes-head';
+  h.textContent = 'Footnotes';
+  list.prepend(h);
+  doc.body.append(list);      // sections() puts it in the last section; moved to the end after
+}
+
 function unwrap(node) { node.replaceWith(...node.childNodes); }
 
 function titleBlock(doc) {
@@ -470,6 +502,7 @@ async function startMathJax() {
       packages: {'[+]': ['mathtools', 'boldsymbol', 'color', 'cancel',
         'textmacros', 'centernot', 'braket']},
       tags: 'ams',
+      macros: {bm: ['\\boldsymbol{#1}', 1]},   // the template's \bm
       formatError: (jax, err) => jax.formatError(err),
     },
     chtml: {fontURL: 'fonts/mathjax', adaptiveCSS: true},
@@ -503,6 +536,40 @@ function defineMacros() {
 }
 function macroTable() { return MACROS; }
 
+// MathJax has no \intertext: an alignment with one is set as separate
+// alignments with the text between them.
+const SEC_NAMES = {chapter: 'Chapter', section: 'Section', subsection: 'Section', subsubsection: 'Section'};
+async function renderTex(tex, display) {
+  const m = display && tex.match(/^\s*\\begin\s*\{([a-z]+\*?)\}([\s\S]*)\\end\s*\{\1\}\s*$/);
+  const parts = m ? splitIntertext(m[2]) : null;
+  if (!parts || parts.length < 2) return MathJax.tex2chtmlPromise(tex, {display});
+  const adaptor = MathJax.startup.adaptor;
+  const box = adaptor.node('mjx-intertext-group', {});
+  for (const [i, part] of parts.entries()) {
+    const node = i % 2
+      ? await MathJax.tex2chtmlPromise(`\\text{${part}}`, {display: false})
+      : await MathJax.tex2chtmlPromise(`\\begin{${m[1]}}${part}\\end{${m[1]}}`, {display: true});
+    if (i % 2) { const p = adaptor.node('mjx-intertext', {}); adaptor.append(p, node); adaptor.append(box, p); }
+    else adaptor.append(box, node);
+  }
+  return box;
+}
+// alternately: alignment rows, \intertext argument, rows, ...
+function splitIntertext(body) {
+  const out = [];
+  let rest = body, i;
+  while ((i = rest.search(/\\intertext\s*\{/)) >= 0) {
+    out.push(rest.slice(0, i).replace(/\\\\\s*$/, ''));
+    let j = rest.indexOf('{', i) + 1, depth = 1;
+    const start = j;
+    for (; j < rest.length && depth; j++) depth += rest[j] === '{' ? 1 : rest[j] === '}' ? -1 : 0;
+    out.push(rest.slice(start, j - 1));
+    rest = rest.slice(j);
+  }
+  out.push(rest);
+  return out;
+}
+
 async function renderMath(doc) {
   const adaptor = MathJax.startup.adaptor;
   const spans = [...doc.querySelectorAll('.mathjax-inline, .mathjax-block, .mathjax-env')];
@@ -515,14 +582,19 @@ async function renderMath(doc) {
     const source = tex.trim();
     // \term makes its formulas bold (\boldmath in the PDF)
     if (span.closest('.ya-term, .ya-termnt')) tex = `\\boldsymbol{${tex}}`;
-    // \eqref and \ref in a formula: MathJax doesn't know the notes' labels
-    tex = tex.replace(/\\(eq)?ref\s*\{([^}]*)\}/g, (all, eq, label) => {
+    // \eqref, \ref, \cref and \Cref in a formula: MathJax doesn't know the notes' labels
+    tex = tex.replace(/\\(eq|c|C)?ref\s*\{([^}]*)\}/g, (all, kind, label) => {
       const e = EQ.get(label.trim());
-      const l = e ? {id: label.trim().replace(/\s+/g, '-'), num: e.num} : LABELS.get(label.trim());
+      const l = e ? {id: label.trim().replace(/\s+/g, '-'), num: e.num, type: 'equation'} : LABELS.get(label.trim());
       if (!l) { problem(`unknown label in a formula: ${label}`); return all; }
-      return `\\href{#${l.id}}{\\text{${eq ? `(${l.num})` : l.num}}}`;
+      let text = kind === 'eq' ? `(${l.num})` : l.num;
+      if (kind === 'c' || kind === 'C') {
+        const name = l.type === 'equation' ? 'Equation' : ENV_NAMES[l.type] || SEC_NAMES[l.type] || '';
+        if (name) text = (kind === 'c' ? name.toLowerCase() : name) + '~' + (l.type === 'equation' ? `(${l.num})` : l.num);
+      }
+      return `\\href{#${l.id}}{\\text{${text}}}`;
     });
-    const node = await MathJax.tex2chtmlPromise(tex, {display});
+    const node = await renderTex(tex, display);
     // the TeX is kept once, on the wrapper (data-tex), not on every node
     const html = adaptor.outerHTML(node).replace(/ data-latex="[^"]*"/g, '');
     if (html.includes('<mjx-merror')) {
@@ -573,6 +645,10 @@ function labelIds(doc) {
   for (const m of fs.readFileSync(aux, 'utf8').matchAll(/\\newlabel\{([^}@]+)\}\{\{\\rEfLiNK\{([^}]+)\}\{(?:\\csname :autoref\\endcsname\{[^}]*\})?([^}]*)\}/g)) {
     if (!byAnchor.has(m[2])) byAnchor.set(m[2], m[1]);
     if (!LABELS.has(m[1])) LABELS.set(m[1], {id: m[2], num: m[3]});
+  }
+  // cleveref's entries give each label's kind (thm, rmk, section, ...)
+  for (const m of fs.readFileSync(aux, 'utf8').matchAll(/\\newlabel\{([^}]+)@cref\}\{\{\[([^\]]*)\]/g)) {
+    if (LABELS.has(m[1])) LABELS.get(m[1]).type = m[2];
   }
   const rename = new Map();
   const used = new Set([...doc.querySelectorAll('[id]')].map(e => e.id));
@@ -863,6 +939,13 @@ function writeOut(doc, title, css, pics, termForms) {
 <script src="${v('notes.js')}" defer></script>
 `;
   head.querySelector('title').textContent = title;
+  // a loading bar, until notes.js has set the page up (a long page takes a few seconds)
+  const loading = doc.createElement('div');
+  loading.className = 'ya-loading';
+  loading.setAttribute('role', 'progressbar');
+  loading.setAttribute('aria-label', 'Loading');
+  loading.innerHTML = '<span>Loading…</span>';
+  doc.body.prepend(loading);
   const data = doc.createElement('script');
   data.type = 'application/json';
   data.id = 'ya-data';
@@ -881,10 +964,13 @@ const htmlFile = path.join(htmlDir, `${path.basename(findMain(), '.tex')}.html`)
 const dom = new JSDOM(fs.readFileSync(htmlFile, 'utf8'));
 const doc = dom.window.document;
 
+footnotes(doc, htmlDir);
 cleanUp(doc);
 const title = titleBlock(doc);
 environments(doc);
 sections(doc);
+const fnList = doc.querySelector('.ya-footnotes');
+if (fnList) doc.querySelector('.ya-article').append(fnList);
 const pics = pictures(doc, htmlDir);
 numberEquations(doc);
 labelIds(doc);

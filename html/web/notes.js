@@ -26,11 +26,11 @@
   var MAX_HITS = 5000;            // matches highlighted at most
 
   var GROUPS = [
-    { key: 'proofs', label: 'Proofs', sel: 'details.ya-proof-fold' },
-    { key: 'boxes', label: 'Boxes', sel: '.ya-box' },
-    { key: 'extras', label: 'Extras', sel: '.ya-plain' },                // examples, remarks, exercises, ...
     { key: 'chapters', label: 'Chapters', sel: 'section.ya-sec-1' },
-    { key: 'sections', label: 'Sections', sel: 'section.ya-sec-2, section.ya-sec-3' }
+    { key: 'sections', label: 'Sections', sel: 'section.ya-sec-2, section.ya-sec-3' },
+    { key: 'boxes', label: 'Boxes', sel: '.ya-box' },
+    { key: 'extras', label: 'Statements', sel: '.ya-plain' },            // examples, remarks, exercises, ...
+    { key: 'proofs', label: 'Proofs', sel: 'details.ya-proof-fold' }
   ];
 
   // ---------------------------------------------------------------- utilities
@@ -80,10 +80,10 @@
 
   var ICON = {
     menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>',
-    back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>',
+    find: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>',
     up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 15l6-6 6 6"/></svg>',
     down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>',
-    eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+    hide: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 4.5h18M10 9.5h11M10 14.5h11M3 19.5h18"/><path d="M3 12l4.5-3.5v7z" fill="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>',
     pdf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4"/></svg>',
     theme: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M12 4v16A8 8 0 0 0 12 4z" fill="currentColor"/></svg>'
   };
@@ -181,23 +181,22 @@
     var findKey = isMac ? '⌘F' : 'Ctrl+F';
     bar.innerHTML =
       '<button id="ya-toc-btn" class="ya-btn ya-icon-only" type="button" aria-label="Contents" title="Show or hide the contents">' + ICON.menu + '</button>' +
-      '<a class="ya-btn ya-icon-only" href="' + esc(data.home || '../') + '" title="All notes" aria-label="All notes">' + ICON.back + '</a>' +
       '<span class="ya-course"></span><span class="ya-spacer"></span>' +
       '<div class="ya-search" role="search">' +
-        '<input id="ya-find" type="search" placeholder="Find  ' + findKey + '" aria-label="Find in these notes" autocomplete="off" spellcheck="false">' +
+        '<label class="ya-find-icon" for="ya-find" title="Find (' + findKey + ')">' + ICON.find + '</label>' +
+        '<input id="ya-find" type="search" aria-label="Find in these notes" autocomplete="off" spellcheck="false">' +
         '<span class="ya-count" aria-live="polite"></span>' +
         '<button class="ya-btn ya-icon-only ya-sbtn" id="ya-prev" type="button" title="Previous match (Shift+Enter)" aria-label="Previous match">' + ICON.up + '</button>' +
         '<button class="ya-btn ya-icon-only ya-sbtn" id="ya-next" type="button" title="Next match (Enter)" aria-label="Next match">' + ICON.down + '</button>' +
       '</div>' +
       '<div class="ya-menu-wrap">' +
-        '<button id="ya-show-btn" class="ya-btn" type="button" aria-haspopup="true" aria-expanded="false" title="Fold or unfold all proofs, boxes, extras or sections">' +
-          ICON.eye + '<span class="ya-label">Show</span></button>' +
-        '<div class="ya-menu" role="menu" aria-label="Show" hidden></div>' +
+        '<button id="ya-show-btn" class="ya-btn" type="button" aria-haspopup="true" aria-expanded="false" title="Fold away all chapters, sections, boxes, statements or proofs">' +
+          ICON.hide + '<span class="ya-label">Hide</span></button>' +
+        '<div class="ya-menu" role="menu" aria-label="Hide" hidden></div>' +
       '</div>' +
       (data.pdf ? '<a class="ya-btn" href="' + esc(data.pdf) + '" title="PDF version">' + ICON.pdf + '<span class="ya-label">PDF</span></a>' : '') +
       '<button id="ya-theme-btn" class="ya-btn ya-icon-only" type="button">' + ICON.theme + '</button>';
     bar.querySelector('.ya-course').textContent = data.title || D.title;
-    if (window.innerWidth < 640) bar.querySelector('#ya-find').placeholder = 'Find';
     D.body.insertBefore(bar, D.body.firstChild);
 
     // One click switches between light and dark. The choice is remembered,
@@ -223,7 +222,7 @@
   }
 
   // ---------------------------------------------------------------- Show menu
-  // One checkbox per group: checked = all unfolded, empty = all folded, a dash
+  // One checkbox per group: checked = all folded, empty = all unfolded, a dash
   // = some of each. Which groups are folded is remembered.
   var menuReady = false;
   function setupShowMenu() {
@@ -243,7 +242,7 @@
     items.forEach(function (it, i) {
       it.addEventListener('click', function () {
         var g = GROUPS.filter(function (x) { return x.key === it.dataset.key; })[0];
-        foldGroup(g, it.getAttribute('aria-checked') === 'true');
+        foldGroup(g, it.getAttribute('aria-checked') !== 'true');
       });
       it.addEventListener('keydown', function (e) {
         if (e.key === 'ArrowDown') { e.preventDefault(); items[(i + 1) % items.length].focus(); }
@@ -280,7 +279,7 @@
       var g = GROUPS.filter(function (x) { return x.key === it.dataset.key; })[0];
       var nodes = article.querySelectorAll(g.sel), folded = 0;
       nodes.forEach(function (n) { if (isFolded(n)) folded++; });
-      it.setAttribute('aria-checked', folded === 0 ? 'true' : folded === nodes.length ? 'false' : 'mixed');
+      it.setAttribute('aria-checked', folded === 0 ? 'false' : folded === nodes.length ? 'true' : 'mixed');
     });
   }
 
@@ -327,33 +326,47 @@
     });
     if (wide.addEventListener) wide.addEventListener('change', sync);
     sync();
-    nav.addEventListener('click', function (e) { if (e.target.closest('a') && !wide.matches) { D.body.classList.remove('ya-toc-open'); sync(); } });
+    nav.addEventListener('click', function (e) {
+      var a = e.target.closest('a');
+      if (!a) return;
+      // the clicked entry is the current one; the sidebar stays put while the page scrolls there
+      jumping = true;
+      setCurrent(links.filter(function (l) { return l.a === a; })[0] || null, false);
+      clearTimeout(jumpTimer);
+      jumpTimer = setTimeout(endJump, 1500);
+      if (!wide.matches) { D.body.classList.remove('ya-toc-open'); sync(); }
+    });
+    function endJump() { jumping = false; clearTimeout(jumpTimer); }
     setupTocResize(nav, wide, sync);
     D.addEventListener('click', function (e) {
       if (D.body.classList.contains('ya-toc-open') && !e.target.closest('.ya-toc, #ya-toc-btn')) { D.body.classList.remove('ya-toc-open'); sync(); }
     });
 
     // highlight the section being read
-    var current = null, pending = false;
+    var current = null, pending = false, jumping = false, jumpTimer = 0;
+    function setCurrent(best, follow) {
+      if (best === current) return;
+      if (current) current.a.classList.remove('ya-current');
+      if (best) {
+        best.a.classList.add('ya-current');
+        var ar = best.a.getBoundingClientRect(), nr = nav.getBoundingClientRect();
+        if (follow && (ar.top < nr.top + 40 || ar.bottom > nr.bottom - 20)) nav.scrollTop += ar.top - nr.top - nr.height / 3;
+      }
+      current = best;
+    }
     function update() {
       pending = false;
+      if (jumping) return;
       var top = barHeight() + 40, best = null;
       for (var i = 0; i < links.length; i++) {
         var r = links[i].h.getBoundingClientRect();
         if (!r.height && !r.width) continue;           // in a folded section
         if (r.top <= top) best = links[i]; else break;
       }
-      if (best !== current) {
-        if (current) current.a.classList.remove('ya-current');
-        if (best) {
-          best.a.classList.add('ya-current');
-          var ar = best.a.getBoundingClientRect(), nr = nav.getBoundingClientRect();
-          if (ar.top < nr.top + 40 || ar.bottom > nr.bottom - 20) nav.scrollTop += ar.top - nr.top - nr.height / 3;
-        }
-        current = best;
-      }
+      setCurrent(best, true);
     }
     window.addEventListener('scroll', function () { if (!pending) { pending = true; requestAnimationFrame(update); } }, { passive: true });
+    window.addEventListener('scrollend', function () { if (jumping) { endJump(); } });
     update();
   }
 
@@ -376,17 +389,30 @@
       grip.setPointerCapture(e.pointerId);
       D.body.classList.add('ya-toc-resizing');
     });
-    grip.addEventListener('pointermove', function (e) {
-      if (!dragging) return;
-      var x = e.clientX;
+    // While dragging, only the sidebar moves (it is cheap to redraw); the text
+    // beside it is laid out again once, on letting go.
+    var x = 0, frame = 0;
+    function draw() {
+      frame = 0;
       closing = x < TOC_CLOSE;
       D.body.classList.toggle('ya-toc-closing', closing);
-      root.style.setProperty('--toc-w', Math.round(Math.min(maxW(), Math.max(TOC_MIN, x))) + 'px');
+      var w = Math.round(Math.min(maxW(), Math.max(TOC_MIN, x))) + 'px';
+      nav.style.width = w;
+      grip.style.left = 'calc(' + w + ' - 4px)';
+    }
+    grip.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      x = e.clientX;
+      if (!frame) frame = requestAnimationFrame(draw);
     });
     function end() {
       if (!dragging) return;
       dragging = false;
+      if (frame) { cancelAnimationFrame(frame); draw(); }
+      var w = nav.style.width;
+      nav.style.width = grip.style.left = '';
       D.body.classList.remove('ya-toc-resizing', 'ya-toc-closing');
+      if (!closing && w) root.style.setProperty('--toc-w', w);
       if (closing) {
         // closed: reopening brings back the last width before the drag
         var w = parseFloat(store.get('tocw'));
